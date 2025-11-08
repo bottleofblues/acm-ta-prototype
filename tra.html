@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACM • Transition Risk Assessment</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    h1,h2 { margin: 0.2rem 0 0.8rem; }
+    .row { display: grid; grid-template-columns: 1fr 100px 140px; gap: 0.5rem; align-items: center; }
+    .row label { font-weight: 600; }
+    .row small { color: #666; display:block; font-weight: 400; }
+    select, input[type="number"] { width: 100%; padding: 0.45rem; border: 1px solid #ccc; border-radius: 8px; }
+    .grid { display: grid; gap: 0.6rem; }
+    .btn { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
+    .btn.secondary { background: #fff; color: #111; }
+    .pill { display:inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid #bbb; margin-left: 0.5rem; }
+    .muted { color: #666;}
+    textarea { width:100%; min-height:100px; padding:0.6rem; border:1px solid #ccc; border-radius:10px;}
+    .footer-links a { margin-right: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Transition Risk Assessment</h1>
+  <p class="muted">Estimate relevance and difficulty for each potential transition demand. If <b>Relevance</b> is “No”, difficulty is ignored.</p>
+
+  <div class="card">
+    <h2>Actions</h2>
+    <div id="actions" class="grid"></div>
+  </div>
+
+  <div class="card">
+    <button id="calc" class="btn">Calculate Risk Index</button>
+    <button id="clear" class="btn secondary">Clear</button>
+    <p id="result" style="margin-top:0.8rem;"></p>
+    <div id="guidance"></div>
+  </div>
+
+  <div class="card">
+    <h2>Copy & Save Your Summary</h2>
+    <p class="muted">This summary is for your coach and for your own journaling. You can paste it into email, a doc, or the journaling space.</p>
+    <textarea id="summary"></textarea>
+    <div class="footer-links" style="margin-top:0.6rem;">
+      <a href="index.html">⟵ Back to ACM TA</a>
+    </div>
+  </div>
+
+  <script>
+    // Canonical list from your program brief
+    const ACTIONS = [
+      "Moving to a new industry or profession",
+      "Joining a new company",
+      "Moving to a new unit or group in the same company",
+      "Being promoted to a higher level",
+      "Leading former peers (assuming you have been promoted)",
+      "Moving from one function to another (e.g., sales to marketing)",
+      "Taking on a cross-functional leadership role for the first time",
+      "Moving geographically",
+      "Entering a new national or ethnic culture",
+      "Having to do two jobs at the same time (finishing old role while starting new one)",
+      "Taking on a newly created role (as opposed to an existing role)",
+      "Entering an organization in which major change already is going on"
+    ];
+
+    const container = document.getElementById("actions");
+
+    function addRow(action) {
+      const div = document.createElement("div");
+      div.className = "row";
+      div.innerHTML = `
+        <div>
+          <label>${action}</label>
+          <small>Relevance: is this part of your current transition?</small>
+        </div>
+        <div>
+          <select data-type="relevance">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div>
+          <input data-type="difficulty" type="number" min="1" max="10" placeholder="1–10" />
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    ACTIONS.forEach(addRow);
+
+    function calculate() {
+      let total = 0;
+      const rows = [...document.querySelectorAll(".row")];
+      const details = [];
+      rows.forEach((row, idx) => {
+        const relevance = row.querySelector('select[data-type="relevance"]').value;
+        const diffEl = row.querySelector('input[data-type="difficulty"]');
+        const diff = parseInt(diffEl.value || "0", 10);
+        const action = ACTIONS[idx];
+        if (relevance === "yes") {
+          const bounded = Math.min(10, Math.max(1, isNaN(diff) ? 1 : diff));
+          total += bounded;
+          details.push({ action, relevance, difficulty: bounded });
+        } else {
+          details.push({ action, relevance, difficulty: 0 });
+        }
+      });
+
+      let label = "Low";
+      let guidance = "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
+      if (total > 60) { label = "High"; guidance = "Sequence learning, limit scope, and tighten check-ins with sponsor."; }
+      else if (total > 30) { label = "Moderate"; guidance = "Target 2–3 risk clusters; time-box learning and secure early allies."; }
+
+      document.getElementById("result").innerHTML =
+        `<b>Transition Risk Index:</b> ${total} <span class="pill">${label}</span>`;
+
+      document.getElementById("guidance").innerHTML = `
+        <p><b>Guidance:</b> ${guidance}</p>
+      `;
+
+      // Build a copy-ready summary
+      const lines = [
+        "ACM • Transition Risk Assessment",
+        `Total Risk Index: ${total} (${label})`,
+        "",
+        "Relevant items (with difficulty 1–10):"
+      ];
+      details.filter(d => d.relevance === "yes").forEach(d => {
+        lines.push(`- ${d.action} — ${d.difficulty}/10`);
+      });
+      lines.push("", "Initial focus next week:", "- Journal top concerns", "- Align quick wins with sponsor", "- Book stakeholder 1:1s");
+      document.getElementById("summary").value = lines.join("\n");
+    }
+
+    function clearAll() {
+      [...document.querySelectorAll('select[data-type="relevance"]')].forEach(s => s.value = "no");
+      [...document.querySelectorAll('input[data-type="difficulty"]')].forEach(i => i.value = "");
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("guidance").innerHTML = "";
+      document.getElementById("summary").value = "";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById("calc").addEventListener("click", calculate);
+    document.getElementById("clear").addEventListener("click", clearAll);
+  </script>
+</body>
+</html>
