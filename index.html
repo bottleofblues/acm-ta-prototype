@@ -5,200 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Paul Bickford Solutions • Advanced Career Mastery — TA</title>
   <style>
-    :root{
-      --border:#ddd; --muted:#555; --ink:#111; --ink-2:#333; --bg:#fff;
-      --btn-bg:#111; --btn-ink:#fff; --card-bg:#fff; --card-br:12px;
-    }
-    html,body{margin:0;padding:0;background:var(--bg);}
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; color: var(--ink); }
-    h1,h2,h3{margin:0 0 .5rem 0}
-    p{margin:.25rem 0 .75rem 0}
-    .muted{color:var(--muted); font-size:.95rem}
-    .wrap{max-width:980px; margin:0 auto}
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    label { display: block; font-weight: 600; margin-top: 0.5rem; }
+    input, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 8px; }
+    small { color: #555; }
 
-    .topbar{display:flex; gap:1rem; justify-content:space-between; align-items:center; margin-bottom:1rem}
-    .brand{font-weight:700}
-
-    .card{
-      border:1px solid var(--border);
-      border-radius:var(--card-br);
-      padding:1rem 1.25rem;
-      margin-bottom:1rem;
-      background:var(--card-bg);
+    /* Shared buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none; /* in case applied to anchors anywhere */
     }
-
-    .row{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;}
-    label{display:block; font-weight:600; margin:.35rem 0}
-    input, textarea{
-      width:100%; padding:.6rem .7rem; border:1px solid #ccc; border-radius:8px;
-      font:inherit; color:inherit; background:#fff;
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-    textarea{min-height:120px}
-    small{display:block; color:var(--muted); margin-top:.25rem}
-
-    .actions{display:flex; gap:.6rem; flex-wrap:wrap}
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center; gap:.4rem;
-      padding:.65rem 1rem; border-radius:10px; border:1px solid var(--ink-2);
-      background:var(--btn-bg); color:var(--btn-ink); text-decoration:none; cursor:pointer;
-      font-weight:600;
+    .btn-secondary {
+      background: #fff;
+      color: #111;
+      border: 1px solid #333;
     }
-    .btn.secondary{background:#fafafa; color:#111; border-color:#ccc}
-    .btn[disabled]{opacity:.45; cursor:not-allowed}
-    .stack > * + *{margin-top:.65rem}
+    .stack { display: flex; flex-wrap: wrap; gap: .5rem; }
 
-    /* Modules list grows over time */
-    .module-list .module{
-      border:1px dashed #d8d8d8; border-radius:12px; padding:1rem; background:#fff;
-    }
-    .module h3{margin:0 0 .25rem 0}
-    .module .desc{color:#666; margin:0 0 .65rem 0; font-size:.95rem}
+    .muted { color: #666; font-size: .95rem; }
+    .divider { height: 1px; background: #eee; margin: .75rem 0 0 0; }
   </style>
 </head>
 <body>
-<div class="wrap">
+  <h1>Paul Bickford Solutions • Advanced Career Mastery</h1>
+  <p class="muted">Hello, I’m your ACM TA. I’ll personalize your first 90 days by using your inputs below. You can opt out of any step.</p>
 
-  <div class="topbar">
-    <div class="brand">Paul Bickford Solutions • Advanced Career Mastery</div>
-    <div><a class="muted" href="acm_ta_privacy.md">Privacy & Data Use</a></div>
-  </div>
-
-  <h1>Welcome — I’m your ACM TA</h1>
-  <p class="muted">I’ll personalize your first 90 days by using your inputs below. You can opt out of any step.</p>
-
-  <!-- Consent -->
-  <div class="card">
+  <!-- 1) Consent -->
+  <div class="card" id="card-consent">
     <h2>Consent</h2>
-    <div class="stack">
-      <label><input type="checkbox" id="consentSite" /> I consent to the TA using my personal website to tailor my learning plan.</label>
-      <label><input type="checkbox" id="consentLinkedIn" /> I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).</label>
-      <label><input type="checkbox" id="consentJD" /> I consent to the TA storing my new job description for personalization.</label>
-      <small>We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.</small>
-    </div>
+    <label><input type="checkbox" id="consentSite" /> I consent to the TA using my personal website to tailor my learning plan.</label>
+    <label><input type="checkbox" id="consentLinkedIn" /> I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).</label>
+    <label><input type="checkbox" id="consentJD" /> I consent to the TA storing my new job description for personalization.</label>
   </div>
 
-  <!-- Inputs -->
-  <div class="card">
+  <!-- 2) Links & Profile -->
+  <div class="card" id="card-profile">
     <h2>Your Links & Profile</h2>
-    <div class="row">
-      <div>
-        <label>Personal Website URL(s)</label>
-        <textarea id="siteUrls" rows="2" placeholder="https://example.com, https://me.example.org"></textarea>
-      </div>
-      <div>
-        <label>LinkedIn Profile URL or Pasted Sections</label>
-        <textarea id="linkedin" rows="4" placeholder="Paste About/Experience or your profile URL"></textarea>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>New Job Description (paste)</label>
-        <textarea id="jobDesc" rows="6" placeholder="Paste JD here"></textarea>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>Optional: Your top 2–3 outcomes for Day 90</label>
-        <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee"></textarea>
-      </div>
-    </div>
-    <div class="actions" style="margin-top:.75rem">
-      <button id="save" class="btn">Save & Continue to Transition Risk Assessment</button>
-    </div>
+    <label>Personal Website URL(s)</label>
+    <textarea id="siteUrls" rows="2" placeholder="https://example.com, https://me.example.org"></textarea>
+
+    <label>LinkedIn Profile URL or Pasted Sections</label>
+    <textarea id="linkedin" rows="4" placeholder="Paste About/Experience or your profile URL"></textarea>
+
+    <label>New Job Description (paste)</label>
+    <textarea id="jobDesc" rows="6" placeholder="Paste JD here"></textarea>
+
+    <label>Optional: Your top 2–3 outcomes for Day 90</label>
+    <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee"></textarea>
   </div>
 
-  <!-- Modules grow here over time -->
-  <div class="card module-list" id="modules">
-    <h2>Modules</h2>
-
-    <!-- Module 1: Transition Risk Assessment -->
-    <div class="module" id="mod-tra">
-      <h3>Transition Risk Assessment</h3>
-      <p class="desc">3–4 minutes. Mark relevance and difficulty for common transition demands to compute your Transition Risk Index.</p>
-      <div class="actions">
-        <a id="btn-tra" class="btn" href="tra.html">Start Transition Risk Assessment</a>
-      </div>
+  <!-- 3) Primary CTA: Transition Risk Assessment -->
+  <div class="card" id="card-primary-cta">
+    <div class="stack">
+      <button class="btn" id="save">Save &amp; Continue to Transition Risk Assessment</button>
     </div>
-
-    <!-- Module 2: Break-Even Point -->
-    <div class="module" id="mod-bep" style="margin-top:1rem">
-      <h3>Break-Even Point (First 90 Days)</h3>
-      <p class="desc">Simulate when your cumulative value created surpasses value consumed as you ramp. Adjust assumptions to fit your context.</p>
-      <div class="actions">
-        <a id="btn-bep" class="btn" href="breakeven.html">Open Break-Even Point</a>
-      </div>
-    </div>
-
-    <!-- Future modules slot -->
-    <div class="module" id="mod-future" style="margin-top:1rem">
-      <h3>More coming soon</h3>
-      <p class="desc">Guides and tools will appear here as the course progresses.</p>
-      <div class="actions">
-        <button class="btn secondary" disabled>Locked until release</button>
-      </div>
-    </div>
+    <p class="muted" style="margin-top:.5rem;">
+      We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.
+    </p>
   </div>
 
-</div>
+  <!-- 4) Assessments & Tools (this section is BELOW the primary CTA) -->
+  <div class="card" id="card-tools">
+    <h2>Assessments &amp; Tools</h2>
+    <p class="muted">After you complete the Transition Risk Assessment, you can explore additional tools. More items will appear here over time.</p>
+    <div class="divider"></div>
+    <div class="stack" style="margin-top:.75rem;">
+      <!-- Secondary tool button: Break-Even Point visualization -->
+      <button class="btn btn-secondary" id="openBEP" disabled>Open Break-Even Point Visualization</button>
+    </div>
+    <p class="muted" id="toolsHint" style="margin-top:.5rem;">(Complete the Transition Risk Assessment first to unlock additional tools.)</p>
+  </div>
 
-<script>
-  // ------- Configuration -------
-  // If true, module buttons are disabled until the learner clicks "Save".
-  const REVEAL_ON_SAVE = true;
-
-  // ------- Helpers -------
-  function byId(id){ return document.getElementById(id); }
-  function saveInitPayload(){
-    const payload = {
-      consents: {
-        use_personal_site: byId('consentSite').checked,
-        use_linkedin: byId('consentLinkedIn').checked,
-        store_job_description: byId('consentJD').checked
-      },
-      personal_site_urls: byId('siteUrls').value,
-      linkedin: byId('linkedin').value,
-      job_description_text: byId('jobDesc').value,
-      day90_outcomes: byId('outcomes').value,
-      savedAt: new Date().toISOString()
-    };
-    localStorage.setItem('acm_init_v1', JSON.stringify(payload));
-    return payload;
-  }
-
-  function setModulesEnabled(enabled){
-    const btnTra = byId('btn-tra');
-    const btnBep = byId('btn-bep');
-    [btnTra, btnBep].forEach(btn=>{
-      if(!btn) return;
-      if(enabled){ btn.removeAttribute('disabled'); btn.classList.remove('secondary'); }
-      else{ btn.setAttribute('disabled',''); btn.classList.add('secondary'); }
-    });
-  }
-
-  function alreadySaved(){
-    try { return !!JSON.parse(localStorage.getItem('acm_init_v1')); }
-    catch { return false; }
-  }
-
-  // ------- Init -------
-  document.addEventListener('DOMContentLoaded', () => {
-    // Progressive reveal logic
-    if(REVEAL_ON_SAVE){
-      setModulesEnabled(alreadySaved());
+  <script>
+    // Enable/disable tools depending on whether the intro was saved
+    function setToolsAvailability() {
+      const savedInit = localStorage.getItem('acm_init_v1');
+      const bepBtn = document.getElementById('openBEP');
+      const hint = document.getElementById('toolsHint');
+      if (savedInit) {
+        bepBtn.disabled = false;
+        hint.textContent = "You can open the Break-Even Point tool anytime.";
+      } else {
+        bepBtn.disabled = true;
+        hint.textContent = "(Complete the Transition Risk Assessment first to unlock additional tools.)";
+      }
     }
 
-    // Save & Continue => persist + route to TRA, then scroll to Modules.
-    byId('save').addEventListener('click', () => {
-      saveInitPayload();
-
-      if(REVEAL_ON_SAVE){ setModulesEnabled(true); }
-
-      // Smooth scroll to Modules section (where TRA appears first)
-      const modules = byId('modules');
-      if(modules && modules.scrollIntoView){
-        modules.scrollIntoView({behavior:'smooth', block:'start'});
-      }
-
-      // Optional: auto-navigate to TRA right away.
-      // window.location.href = 'tra.html';
+    // Primary CTA: Save profile & go to TRA
+    document.getElementById('save').addEventListener('click', () => {
+      const payload = {
+        consents: {
+          use_personal_site: document.getElementById('consentSite').checked,
+          use_linkedin: document.getElementById('consentLinkedIn').checked,
+          store_job_description: document.getElementById('consentJD').checked
+        },
+        personal_site_urls: document.getElementById('siteUrls').value,
+        linkedin: document.getElementById('linkedin').value,
+        job_description_text: document.getElementById('jobDesc').value,
+        day90_outcomes: document.getElementById('outcomes').value
+      };
+      localStorage.setItem('acm_init_v1', JSON.stringify(payload));
+      // Navigate to Transition Risk Assessment (kept as the first step)
+      window.location.href = 'tra.html';
     });
-  });
-</script>
+
+    // Secondary tool button: Break-Even Point
+    document.getElementById('openBEP').addEventListener('click', () => {
+      window.location.href = 'breakeven.html';
+    });
+
+    // On load, set availability of tools
+    setToolsAvailability();
+
+    // (Optional) If you want the BEP tool to auto-unlock when user returns from tra.html,
+    // this will already work because acm_init_v1 is set before navigation.
+  </script>
 </body>
 </html>
