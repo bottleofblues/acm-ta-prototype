@@ -1,0 +1,18 @@
+<!-- Replace your current button's click handler with this: -->
+<script>
+  document.getElementById('save').addEventListener('click', () => {
+    const payload = {
+      consents: {
+        use_personal_site: document.getElementById('consentSite').checked,
+        use_linkedin: document.getElementById('consentLinkedIn').checked,
+        store_job_description: document.getElementById('consentJD').checked
+      },
+      personal_site_urls: document.getElementById('siteUrls').value,
+      linkedin: document.getElementById('linkedin').value,
+      job_description_text: document.getElementById('jobDesc').value,
+      day90_outcomes: document.getElementById('outcomes').value
+    };
+    localStorage.setItem('acm_init_v1', JSON.stringify(payload));
+    window.location.href = 'tra.html';
+  });
+</script>
