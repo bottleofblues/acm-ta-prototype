@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACM TA — Transition Risk Results</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.5; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    button, a.btn { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; text-decoration:none; display:inline-block; cursor:pointer; }
+    .muted { color:#666; }
+    .badge { display:inline-block; padding:.25rem .5rem; border-radius:999px; border:1px solid #111; }
+    .low { background:#e8f5e9; }
+    .mod { background:#fffde7; }
+    .high { background:#ffebee; }
+    ul { margin: .5rem 0 .5rem 1.25rem; }
+    textarea { width:100%; min-height:110px; border:1px solid #ccc; border-radius:8px; padding:.6rem; }
+    .topbar a { text-decoration:none; }
+    .kpi { font-size:1.25rem; }
+  </style>
+</head>
+<body>
+  <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+    <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
+    <div class="actions">
+      <a class="btn" href="index.html">TA Home</a>
+      <a class="btn" href="tra.html">Edit Assessment</a>
+    </div>
+  </div>
+
+  <h1>Transition Risk Results</h1>
+  <p class="muted">This summary is computed from your saved Transition Risk Assessment (on this device).</p>
+
+  <div class="card" id="summary">
+    <div class="kpi">Transition Risk Index: <strong id="score">—</strong>
+      &nbsp;<span id="bucket" class="badge">—</span>
+    </div>
+    <div id="guidance" class="muted" style="margin-top:.25rem;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Top Risk Items</h2>
+    <p class="muted">Highest relevant items by difficulty (up to 3):</p>
+    <ul id="topRisks"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Recommendations (90-Day Orientation)</h2>
+    <ul id="recs">
+      <!-- filled by JS based on bucket -->
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Journal (Optional)</h2>
+    <p class="muted">Capture next steps or coaching questions. This saves locally.</p>
+    <textarea id="journal"></textarea>
+    <div class="actions" style="margin-top:.5rem;">
+      <button id="saveJournal">Save Journal</button>
+      <button id="copy">Copy Summary</button>
+      <button id="downloadJson">Download JSON</button>
+      <button id="downloadCsv">Download CSV</button>
+      <button id="print">Print</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>What’s Next</h2>
+    <p>We’ll introduce the **Break-Even Point** and common **Transition Traps** next to help you align pace, expectations, and learning strategy.</p>
+    <p class="muted">Privacy note: your inputs remain on this device unless you share or export them.</p>
+  </div>
+
+  <script src="results.js"></script>
+</body>
+</html>
