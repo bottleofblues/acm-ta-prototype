@@ -1,0 +1,4 @@
+learner_id,name,email,org,role,completed_TRA,TRA_total_risk_score,journal_entries,last_activity_iso,modules_started,modules_completed,engagement_score_0_100
+L001,A. Lee,alee@example.com,Acme Health,VP Ops,True,67,3,2025-11-07T15:21:00Z,2,1,72
+L002,B. Singh,bsingh@example.com,Globex,Director Finance,True,41,1,2025-11-06T12:02:00Z,1,0,48
+L003,C. Martinez,cm@example.com,Initech,SVP HR,False,,0,,,,12

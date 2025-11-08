@@ -1,0 +1,51 @@
+# ACM Exercise Spec (YAML)
+# Define weekly activities the TA can present dynamically.
+
+id: transition-risk-assessment
+title: Transition Risk Assessment
+duration_minutes: 4
+objective: >
+  Orient the learner to the 90-day framework by gauging the relevance and perceived difficulty
+  of common transition demands; compute a Transition Risk Index and suggest focus areas.
+inputs:
+  - name: action
+    type: enum
+    options:
+      - Moving to a new industry or profession
+      - Joining a new company
+      - Moving to a new unit or group in the same company
+      - Being promoted to a higher level
+      - Leading former peers (assuming you have been promoted)
+      - Moving from one function to another (e.g., sales to marketing)
+      - Taking on a cross-functional leadership role for the first time
+      - Moving geographically
+      - Entering a new national or ethnic culture
+      - Having to do two jobs at the same time (finishing old role while starting new one)
+      - Taking on a newly created role (as opposed to an existing role)
+      - Entering an organization in which major change already is going on
+  - name: relevance
+    type: boolean
+    label: Is this relevant to your current transition?
+  - name: relative_difficulty
+    type: integer
+    min: 1
+    max: 10
+    label: If relevant, how difficult (1–10)?
+
+scoring:
+  method: sum_difficulties_if_relevant
+  output_field: transition_risk_index
+  interpretation_buckets:
+    - label: Low
+      max: 30
+      guidance: "Risks appear manageable; prioritize quick wins and stakeholder mapping."
+    - label: Moderate
+      max: 60
+      guidance: "Target 2–3 risk clusters; time-box learning and secure early allies."
+    - label: High
+      max: 120
+      guidance: "Sequence learning, limit scope, and tighten check-ins with sponsor."
+next_steps:
+  - "Invite learner to journal key concerns (voice or text)."
+  - "Recommend reading segments and templates aligned to their highest risk areas."
+  - "Schedule a short plan review with coach or sponsor."

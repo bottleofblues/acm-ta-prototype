@@ -1,0 +1,59 @@
+{
+  "states": {
+    "intro": {
+      "on_success": "consent",
+      "actions": [
+        "send_brand_greeting",
+        "explain_value"
+      ]
+    },
+    "consent": {
+      "on_success": "collect_inputs",
+      "actions": [
+        "ask_consent_personal_site",
+        "ask_consent_linkedin",
+        "ask_consent_jd"
+      ]
+    },
+    "collect_inputs": {
+      "on_success": "confirm_usage",
+      "actions": [
+        "collect_urls_and_texts"
+      ]
+    },
+    "confirm_usage": {
+      "on_success": "exercise_tra",
+      "actions": [
+        "summarize_usage_and_choices"
+      ]
+    },
+    "exercise_tra": {
+      "on_success": "plan_handshake",
+      "actions": [
+        "run_transition_risk_assessment"
+      ]
+    },
+    "plan_handshake": {
+      "on_success": "weekly_loop",
+      "actions": [
+        "present_initial_focus_areas",
+        "offer_journaling_prompt"
+      ]
+    },
+    "weekly_loop": {
+      "on_success": "complete",
+      "actions": [
+        "fetch_next_exercise",
+        "check_progress",
+        "schedule_coach_review"
+      ]
+    },
+    "complete": {
+      "actions": [
+        "celebrate",
+        "collect_feedback"
+      ]
+    }
+  },
+  "initial": "intro"
+}

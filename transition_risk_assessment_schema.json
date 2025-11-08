@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransitionRiskAssessmentSubmission",
+  "type": "object",
+  "properties": {
+    "learner_id": {
+      "type": "string"
+    },
+    "timestamp_iso": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "relevance": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "relative_difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "action",
+          "relevance",
+          "relative_difficulty"
+        ]
+      }
+    },
+    "total_risk_score": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "learner_id",
+    "timestamp_iso",
+    "responses",
+    "total_risk_score"
+  ]
+}

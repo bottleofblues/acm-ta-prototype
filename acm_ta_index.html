@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paul Bickford Solutions • Advanced Career Mastery — TA</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.4; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    label { display: block; font-weight: 600; margin-top: 0.5rem; }
+    input, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; }
+    small { color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Paul Bickford Solutions • Advanced Career Mastery</h1>
+  <p>Hello, I’m your ACM TA. I’ll personalize your first 90 days by using your inputs below. You can opt out of any step.</p>
+
+  <div class="card">
+    <h2>Consent</h2>
+    <label><input type="checkbox" id="consentSite" /> I consent to the TA using my personal website to tailor my learning plan.</label>
+    <label><input type="checkbox" id="consentLinkedIn" /> I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).</label>
+    <label><input type="checkbox" id="consentJD" /> I consent to the TA storing my new job description for personalization.</label>
+  </div>
+
+  <div class="card">
+    <h2>Your Links & Profile</h2>
+    <label>Personal Website URL(s)</label>
+    <textarea id="siteUrls" rows="2" placeholder="https://example.com, https://me.example.org"></textarea>
+
+    <label>LinkedIn Profile URL or Pasted Sections</label>
+    <textarea id="linkedin" rows="4" placeholder="Paste About/Experience or your profile URL"></textarea>
+
+    <label>New Job Description (paste)</label>
+    <textarea id="jobDesc" rows="6" placeholder="Paste JD here"></textarea>
+
+    <label>Optional: Your top 2–3 outcomes for Day 90</label>
+    <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee"></textarea>
+  </div>
+
+  <div class="card">
+    <button id="save">Save & Continue to Transition Risk Assessment</button>
+    <p><small>We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.</small></p>
+  </div>
+
+  <script>
+    document.getElementById('save').addEventListener('click', () => {
+      const payload = {
+        consents: {
+          use_personal_site: document.getElementById('consentSite').checked,
+          use_linkedin: document.getElementById('consentLinkedIn').checked,
+          store_job_description: document.getElementById('consentJD').checked
+        },
+        personal_site_urls: document.getElementById('siteUrls').value,
+        linkedin: document.getElementById('linkedin').value,
+        job_description_text: document.getElementById('jobDesc').value,
+        day90_outcomes: document.getElementById('outcomes').value
+      };
+      // Placeholder: In production, POST this to your backend (e.g., /api/learner/init)
+      console.log('ACM TA Init Payload', payload);
+      alert('Saved locally for demo. Next: present the Transition Risk Assessment.');
+    });
+  </script>
+</body>
+</html>
