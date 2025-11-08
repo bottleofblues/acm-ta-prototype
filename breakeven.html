@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACM TA — Break‑Even Point (First 90 Days)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    label { font-weight: 600; display: block; margin-bottom: .35rem; }
+    input { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
+    .muted { color: #666; font-size: .9rem; }
+    canvas { width: 100%; height: 360px; border: 1px solid #eee; border-radius: 12px; background: #fff; }
+    .topbar a { text-decoration: none; }
+    .legend { display:flex; gap: 1rem; align-items:center; }
+    .swatch { width: 14px; height: 14px; border-radius: 3px; display:inline-block; margin-right: .35rem; }
+    .swatch.consumed { background: #9aa5b1; }
+    .swatch.created { background: #3b82f6; }
+    .swatch.bep { background: #ef4444; }
+    .inline { display:inline-block; }
+    .note { width: 100%; min-height: 100px; }
+  </style>
+</head>
+<body>
+  <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+    <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
+    <div class="legend">
+      <span class="swatch consumed"></span><span class="inline muted">Cumulative Value Consumed</span>
+      <span class="swatch created"></span><span class="inline muted">Cumulative Value Created</span>
+      <span class="swatch bep"></span><span class="inline muted">Break‑Even Point</span>
+      <a style="margin-left:1rem;" href="index.html">← TA Home</a>
+    </div>
+  </div>
+
+  <h1>Break‑Even Point</h1>
+  <p class="muted">Visualize when your cumulative value created surpasses the value consumed as you ramp in your first 90 days. Adjust the assumptions to fit your context.</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Start Date</label>
+        <input id="startDate" type="date">
+      </div>
+      <div>
+        <label>Daily Value Consumed (cost proxy)</label>
+        <input id="dailyCost" type="number" min="0" step="10" value="600">
+        <small class="muted">Approximate total daily cost to the org (salary, overhead, onboarding time).</small>
+      </div>
+      <div>
+        <label>Max Daily Value Created (at 100% ramp)</label>
+        <input id="dailyValue" type="number" min="0" step="10" value="900">
+        <small class="muted">Your estimated daily contribution once fully effective.</small>
+      </div>
+      <div>
+        <label>Days to Reach Target Effectiveness</label>
+        <input id="daysTo100" type="number" min="1" max="180" value="75">
+        <small class="muted">Linear ramp from 0% to 100% effectiveness over this many days.</small>
+      </div>
+      <div>
+        <label>Initial Effectiveness (%)</label>
+        <input id="initialPct" type="number" min="0" max="100" value="15">
+        <small class="muted">Starting productivity on Day 1.</small>
+      </div>
+      <div>
+        <label>Horizon (days)</label>
+        <input id="horizon" type="number" min="30" max="200" value="120">
+        <small class="muted">How many days to simulate.</small>
+      </div>
+    </div>
+    <div style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+      <button id="simulate">Simulate</button>
+      <button id="quick">Quick Defaults</button>
+      <button id="save">Save Snapshot</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <canvas id="chart" width="900" height="360" aria-label="Break-Even Point chart"></canvas>
+    <p id="bepText" class="muted"></p>
+  </div>
+
+  <div class="card">
+    <h2>Reflect & Journal (Optional)</h2>
+    <textarea id="journal" class="note" placeholder="What would accelerate your ramp? What support from your manager/sponsor would help? Which early wins could you target by Day 30?"></textarea>
+    <div style="margin-top: .5rem;">
+      <button id="saveJournal">Save Journal</button>
+      <span id="journalSaved" class="muted"></span>
+    </div>
+  </div>
+
+  <script src="breakeven.js"></script>
+</body>
+</html>
