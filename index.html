@@ -5,63 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Paul Bickford Solutions • Advanced Career Mastery — TA</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.4; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
-    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
-    label { display: block; font-weight: 600; margin-top: 0.5rem; }
-    input, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 8px; }
-    button { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; }
-    small { color: #555; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      margin: 2rem;
+      line-height: 1.45;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 0.6rem;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 0.25rem;
+    }
+    input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .muted { color: #555; }
+    h1, h2 { margin-bottom: 0.4rem; }
   </style>
 </head>
 <body>
-  <h1>Paul Bickford Solutions • Advanced Career Mastery</h1>
-  <p>Hello, I’m your ACM TA. I’ll personalize your first 90 days by using your inputs below. You can opt out of any step.</p>
 
+  <h1>Paul Bickford Solutions • Advanced Career Mastery</h1>
+  <p class="muted">
+    Welcome — I’m your ACM TA. I’ll help you personalize and accelerate your first 90 days.
+    All fields below are optional and consent-based.
+  </p>
+
+  <!-- CONSENT CARD -->
   <div class="card">
     <h2>Consent</h2>
-    <label><input type="checkbox" id="consentSite" /> I consent to the TA using my personal website to tailor my learning plan.</label>
-    <label><input type="checkbox" id="consentLinkedIn" /> I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).</label>
-    <label><input type="checkbox" id="consentJD" /> I consent to the TA storing my new job description for personalization.</label>
+    <p class="muted">Select what you're comfortable sharing. You may skip any item.</p>
+
+    <label>
+      <input type="checkbox" id="consentSite">
+      I consent to the TA using my personal website to tailor my plan.
+    </label>
+
+    <label>
+      <input type="checkbox" id="consentLinkedIn">
+      I consent to the TA using information from my LinkedIn profile (I will paste or provide a URL).
+    </label>
+
+    <label>
+      <input type="checkbox" id="consentJD">
+      I consent to the TA storing my new job description to personalize my plan.
+    </label>
   </div>
 
+  <!-- PROFILE INPUTS -->
   <div class="card">
-    <h2>Your Links & Profile</h2>
-    <label>Personal Website URL(s)</label>
-    <textarea id="siteUrls" rows="2" placeholder="https://example.com, https://me.example.org"></textarea>
+    <h2>Your Profile Inputs</h2>
 
-    <label>LinkedIn Profile URL or Pasted Sections</label>
-    <textarea id="linkedin" rows="4" placeholder="Paste About/Experience or your profile URL"></textarea>
+    <label for="siteUrls">Personal Website URL(s)</label>
+    <textarea id="siteUrls" rows="2" placeholder="https://yourwebsite.com"></textarea>
 
-    <label>New Job Description (paste)</label>
-    <textarea id="jobDesc" rows="6" placeholder="Paste JD here"></textarea>
+    <label for="linkedin">LinkedIn Profile URL or Pasted About/Experience</label>
+    <textarea id="linkedin" rows="4" placeholder="Paste your About/Experience or your full LinkedIn URL"></textarea>
 
-    <label>Optional: Your top 2–3 outcomes for Day 90</label>
-    <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee"></textarea>
+    <label for="jobDesc">New Job Description (paste text here)</label>
+    <textarea id="jobDesc" rows="6" placeholder="Paste job description"></textarea>
+
+    <label for="outcomes">Optional: Your Top 2–3 Outcomes for Day 90</label>
+    <textarea id="outcomes" rows="3" placeholder="Example: Build stakeholder trust; deliver early win; map team capabilities"></textarea>
   </div>
 
+  <!-- NAVIGATION BUTTON -->
   <div class="card">
     <button id="save">Save & Continue to Transition Risk Assessment</button>
-    <p><small>We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.</small></p>
+    <p class="muted" style="margin-top:0.5rem;">
+      Your information is stored only in your browser. Nothing is uploaded.
+    </p>
   </div>
 
+  <!-- SCRIPT -->
   <script>
-  document.getElementById('save').addEventListener('click', () => {
-    const payload = {
-      consents: {
-        use_personal_site: document.getElementById('consentSite').checked,
-        use_linkedin: document.getElementById('consentLinkedIn').checked,
-        store_job_description: document.getElementById('consentJD').checked
-      },
-      personal_site_urls: document.getElementById('siteUrls').value,
-      linkedin: document.getElementById('linkedin').value,
-      job_description_text: document.getElementById('jobDesc').value,
-      day90_outcomes: document.getElementById('outcomes').value
-    };
-    // (Optional) keep these for later pages to read
-    localStorage.setItem('acm_init_v1', JSON.stringify(payload));
+    document.getElementById('save').addEventListener('click', () => {
+      const payload = {
+        consents: {
+          use_personal_site: document.getElementById('consentSite').checked,
+          use_linkedin: document.getElementById('consentLinkedIn').checked,
+          store_job_description: document.getElementById('consentJD').checked
+        },
+        personal_site_urls: document.getElementById('siteUrls').value,
+        linkedin: document.getElementById('linkedin').value,
+        job_description_text: document.getElementById('jobDesc').value,
+        day90_outcomes: document.getElementById('outcomes').value
+      };
 
-    // Go to the assessment
-    window.location.href = 'tra.html';
-  });
-</script>
+      // Save to browser storage so the TA can reference it later
+      localStorage.setItem('acm_init_v1', JSON.stringify(payload));
+
+      // Navigate to the Transition Risk Assessment
+      window.location.href = 'tra.html';
+    });
+  </script>
+
+</body>
+</html>
