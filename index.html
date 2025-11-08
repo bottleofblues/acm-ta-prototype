@@ -46,22 +46,22 @@
   </div>
 
   <script>
-    document.getElementById('save').addEventListener('click', () => {
-      const payload = {
-        consents: {
-          use_personal_site: document.getElementById('consentSite').checked,
-          use_linkedin: document.getElementById('consentLinkedIn').checked,
-          store_job_description: document.getElementById('consentJD').checked
-        },
-        personal_site_urls: document.getElementById('siteUrls').value,
-        linkedin: document.getElementById('linkedin').value,
-        job_description_text: document.getElementById('jobDesc').value,
-        day90_outcomes: document.getElementById('outcomes').value
-      };
-      // Placeholder: In production, POST this to your backend (e.g., /api/learner/init)
-      console.log('ACM TA Init Payload', payload);
-      alert('Saved locally for demo. Next: present the Transition Risk Assessment.');
-    });
-  </script>
-</body>
-</html>
+  document.getElementById('save').addEventListener('click', () => {
+    const payload = {
+      consents: {
+        use_personal_site: document.getElementById('consentSite').checked,
+        use_linkedin: document.getElementById('consentLinkedIn').checked,
+        store_job_description: document.getElementById('consentJD').checked
+      },
+      personal_site_urls: document.getElementById('siteUrls').value,
+      linkedin: document.getElementById('linkedin').value,
+      job_description_text: document.getElementById('jobDesc').value,
+      day90_outcomes: document.getElementById('outcomes').value
+    };
+    // (Optional) keep these for later pages to read
+    localStorage.setItem('acm_init_v1', JSON.stringify(payload));
+
+    // Go to the assessment
+    window.location.href = 'tra.html';
+  });
+</script>
