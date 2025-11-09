@@ -116,6 +116,36 @@ async function postCoach(prompt, profile) {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
+document.getElementById("getFeedback").addEventListener("click", async () => {
+  const coachReply = document.getElementById("coachReply");
+  coachReply.textContent = "Thinking…";
+
+  // Pull the learner’s journal and a short summary of current TRA risks
+  const payload = collect(); // you already have this
+  const { total, bucket } = score(payload);
+  const journal = payload.journal || "(no notes)";
+  
+  // Pull whatever you saved on the welcome page
+  let profile = {};
+  try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
+
+  // Create a concise prompt for the coach (keep it short/high-signal)
+  const prompt = [
+    "Provide concise coaching feedback (3-5 bullets) for a new executive in first 90 days.",
+    `Transition Risk Index: ${total} (${bucket})`,
+    `Journal: ${journal}`
+  ].join("\n");
+
+  try {
+    const data = await postCoach(prompt, profile);
+    // For now the backend may echo a stub or your OpenAI completion.
+    const reply = data.reply || data.note || "Feedback ready (stub).";
+    coachReply.textContent = reply;
+  } catch (e) {
+    coachReply.textContent = "Could not reach the coach service.";
+    console.error(e);
+  }
+});
 
   document.getElementById("calc").addEventListener("click", () => {
     const payload = collect();
