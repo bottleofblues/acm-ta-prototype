@@ -1,3 +1,5 @@
+// Transition Risk Assessment — ACM TA
+
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -105,19 +107,19 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
   document.getElementById("calc").addEventListener("click", () => {
-  const payload = collect();
-  const { total, bucket, guidance } = score(payload);
+    const payload = collect();
+    const { total, bucket, guidance } = score(payload);
+    document.getElementById("result").innerHTML = `
+      Transition Risk Index: <strong>${total}</strong>
+      &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
+      <br>${guidance}
+    `;
+  });
 
-  // Save before leaving
-  save(payload);
+  document.getElementById("save").addEventListener("click", () => {
+    save(collect());
+    document.getElementById("result").textContent = "Progress saved locally on this device.";
+  });
 
-  // (Optional) brief inline feedback
-  document.getElementById("result").innerHTML = `
-    Transition Risk Index: <strong>${total}</strong>
-    &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
-    <br>${guidance}
-  `;
-
-  // Navigate to results page
-  window.location.href = "results.html";
+  document.getElementById("clear").addEventListener("click", clearAll);
 });
