@@ -1,23 +1,25 @@
 {
+  "$schema": "https://example.com/acm-exercises.schema.json",
   "version": 1,
-  "catalog": [
+  "items": [
     {
       "id": "transition-risk-assessment",
       "title": "Transition Risk Assessment",
-      "type": "exercise",
-      "path": "tra.html",
-      "duration_minutes": 4,
+      "description": "Mark relevance and difficulty to compute your Transition Risk Index.",
+      "path": "/exercises/transition-risk-assessment.json",
+      "enabled": true,
       "order": 10,
-      "visible": true
+      "release_date": "2025-11-01",
+      "prerequisites": []
     },
     {
       "id": "break-even-point",
       "title": "Break-Even Point Visualization",
-      "type": "tool",
-      "path": "breakeven.html",
-      "duration_minutes": 5,
+      "description": "Simulate ramp-up and see your break-even day.",
+      "path": "/breakeven.html",
+      "enabled": true,
       "order": 20,
-      "visible": true
+      "type": "tool" 
     }
   ]
 }
