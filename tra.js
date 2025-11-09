@@ -1,18 +1,20 @@
+// -----------------------------
+// Config & Backend POST helper
+// -----------------------------
 async function postCoach(prompt, profile) {
-  const backend = localStorage.getItem("acm_backend_base") || "http://localhost:3000";
-
-  const res = await fetch(`${backend}/api/coach`, {
+  const base = localStorage.getItem("acm_backend_base") || "http://localhost:3000"; // dev default
+  const res = await fetch(`${base}/api/coach`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt, profile })
   });
-
-  if (!res.ok) throw new Error(`Coach API returned ${res.status}`);
-
+  if (!res.ok) throw new Error(`Coach API ${res.status}`);
   return res.json();
 }
-// Transition Risk Assessment — ACM TA
 
+// -----------------------------
+// Transition Risk Assessment — ACM TA
+// -----------------------------
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -72,7 +74,8 @@ function renderTable() {
     tbody.appendChild(row);
   });
 
-  document.getElementById("journal").value = (saved.journal || "");
+  const j = document.getElementById("journal");
+  if (j) j.value = (saved.journal || "");
 }
 
 function collect() {
@@ -84,7 +87,8 @@ function collect() {
     const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
     data.push({ action, relevance, difficulty, notes });
   });
-  const journal = document.getElementById("journal").value.trim();
+  const journalEl = document.getElementById("journal");
+  const journal = journalEl ? journalEl.value.trim() : "";
   return { rows: data, journal };
 }
 
@@ -113,98 +117,74 @@ function load() {
 function clearAll() {
   localStorage.removeItem(STORAGE_KEY);
   renderTable();
-  document.getElementById("result").textContent = "";
+  const result = document.getElementById("result");
+  if (result) result.textContent = "";
 }
 
-async function postCoach(prompt, profile) {
-  const base = localStorage.getItem("acm_backend_base") || "http://localhost:3000"; // dev default
-  const res = await fetch(`${base}/api/coach`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, profile })
-  });
-  if (!res.ok) throw new Error(`Coach API ${res.status}`);
-  return res.json();
-}
-
+// -----------------------------
+// Wire up the page
+// -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
-document.getElementById("getFeedback").addEventListener("click", async () => {
+
+  const calcBtn = document.getElementById("calc");
+  const saveBtn = document.getElementById("save");
+  const clearBtn = document.getElementById("clear");
+  const feedbackBtn = document.getElementById("getFeedback");
   const coachReply = document.getElementById("coachReply");
-  coachReply.textContent = "Thinking…";
-  document.getElementById("getFeedback").addEventListener("click", async () => {
-  const replyBox = document.getElementById("coachReply");
-  replyBox.textContent = "Thinking...";
 
-  const payload = collect(); // your existing function that collects TRA fields
-  const journalText = payload.journal || "(no journal entry provided)";
-  const { total, bucket } = score(payload); // you already have score()
-
-  // load the learner profile created on the welcome page
-  let profile = {};
-  try {
-    profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
-  } catch {}
-
-  // Build the coaching prompt
-  const prompt = `
-Provide concise guidance for a newly hired executive.
-Transition Risk Index: ${total} (${bucket})
-Journal entry: "${journalText}"
-
-Offer 3 specific next-step actions for the next 7 days.
-  `.trim();
-
-  try {
-    const result = await postCoach(prompt, profile);
-    replyBox.textContent = result.reply || result.note || "(no response)";
-  } catch (err) {
-    replyBox.textContent = "ACM TA could not respond.";
-    console.error(err);
+  if (calcBtn) {
+    calcBtn.addEventListener("click", () => {
+      const payload = collect();
+      const { total, bucket, guidance } = score(payload);
+      const result = document.getElementById("result");
+      if (result) {
+        result.innerHTML = `
+          Transition Risk Index: <strong>${total}</strong>
+          &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
+          <br>${guidance}
+        `;
+      }
+    });
   }
-});
 
-  // Pull the learner’s journal and a short summary of current TRA risks
-  const payload = collect(); // you already have this
-  const { total, bucket } = score(payload);
-  const journal = payload.journal || "(no notes)";
-  
-  // Pull whatever you saved on the welcome page
-  let profile = {};
-  try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
-
-  // Create a concise prompt for the coach (keep it short/high-signal)
-  const prompt = [
-    "Provide concise coaching feedback (3-5 bullets) for a new executive in first 90 days.",
-    `Transition Risk Index: ${total} (${bucket})`,
-    `Journal: ${journal}`
-  ].join("\n");
-
-  try {
-    const data = await postCoach(prompt, profile);
-    // For now the backend may echo a stub or your OpenAI completion.
-    const reply = data.reply || data.note || "Feedback ready (stub).";
-    coachReply.textContent = reply;
-  } catch (e) {
-    coachReply.textContent = "Could not reach the coach service.";
-    console.error(e);
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      save(collect());
+      const result = document.getElementById("result");
+      if (result) result.textContent = "Progress saved locally on this device.";
+    });
   }
-});
 
-  document.getElementById("calc").addEventListener("click", () => {
-    const payload = collect();
-    const { total, bucket, guidance } = score(payload);
-    document.getElementById("result").innerHTML = `
-      Transition Risk Index: <strong>${total}</strong>
-      &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
-      <br>${guidance}
-    `;
-  });
+  if (clearBtn) {
+    clearBtn.addEventListener("click", clearAll);
+  }
 
-  document.getElementById("save").addEventListener("click", () => {
-    save(collect());
-    document.getElementById("result").textContent = "Progress saved locally on this device.";
-  });
+  if (feedbackBtn && coachReply) {
+    feedbackBtn.addEventListener("click", async () => {
+      coachReply.textContent = "Thinking…";
 
-  document.getElementById("clear").addEventListener("click", clearAll);
+      const payload = collect();
+      const { total, bucket } = score(payload);
+      const journalText = payload.journal || "(no journal entry provided)";
+
+      let profile = {};
+      try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
+
+      const prompt = [
+        "Provide concise coaching feedback (3–5 bullets) for a newly hired executive in their first 90 days.",
+        `Transition Risk Index: ${total} (${bucket})`,
+        `Journal: ${journalText}`,
+        "Focus on next 7 days and one early win."
+      ].join("\n");
+
+      try {
+        const result = await postCoach(prompt, profile);
+        coachReply.textContent = result.reply || result.note || "(no response)";
+      } catch (err) {
+        coachReply.textContent = "ACM TA could not respond.";
+        console.error(err);
+      }
+    });
+  }
 });
