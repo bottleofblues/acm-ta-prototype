@@ -1,3 +1,16 @@
+async function postCoach(prompt, profile) {
+  const backend = localStorage.getItem("acm_backend_base") || "http://localhost:3000";
+
+  const res = await fetch(`${backend}/api/coach`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, profile })
+  });
+
+  if (!res.ok) throw new Error(`Coach API returned ${res.status}`);
+
+  return res.json();
+}
 // Transition Risk Assessment — ACM TA
 
 const ACTIONS = [
@@ -119,6 +132,37 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("getFeedback").addEventListener("click", async () => {
   const coachReply = document.getElementById("coachReply");
   coachReply.textContent = "Thinking…";
+  document.getElementById("getFeedback").addEventListener("click", async () => {
+  const replyBox = document.getElementById("coachReply");
+  replyBox.textContent = "Thinking...";
+
+  const payload = collect(); // your existing function that collects TRA fields
+  const journalText = payload.journal || "(no journal entry provided)";
+  const { total, bucket } = score(payload); // you already have score()
+
+  // load the learner profile created on the welcome page
+  let profile = {};
+  try {
+    profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
+  } catch {}
+
+  // Build the coaching prompt
+  const prompt = `
+Provide concise guidance for a newly hired executive.
+Transition Risk Index: ${total} (${bucket})
+Journal entry: "${journalText}"
+
+Offer 3 specific next-step actions for the next 7 days.
+  `.trim();
+
+  try {
+    const result = await postCoach(prompt, profile);
+    replyBox.textContent = result.reply || result.note || "(no response)";
+  } catch (err) {
+    replyBox.textContent = "ACM TA could not respond.";
+    console.error(err);
+  }
+});
 
   // Pull the learner’s journal and a short summary of current TRA risks
   const payload = collect(); // you already have this
