@@ -76,6 +76,83 @@
       We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.
     </p>
   </div>
+<div class="card" id="nextUpCard" style="display:none;">
+  <h2>Next up</h2>
+  <div id="nextUpList"></div>
+</div>
+
+<script>
+  // Utility: make a consistent button style (primary vs secondary)
+  function makeBtn(label, href, primary=false) {
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = label;
+    a.style.display = 'inline-block';
+    a.style.padding = '0.6rem 1rem';
+    a.style.borderRadius = '10px';
+    a.style.border = '1px solid #333';
+    a.style.marginRight = '.5rem';
+    a.style.textDecoration = 'none';
+    if (primary) {
+      a.style.background = '#111';
+      a.style.color = '#fff';
+    } else {
+      a.style.background = '#fff';
+      a.style.color = '#111';
+    }
+    return a;
+  }
+
+  async function loadNextUp() {
+    try {
+      const res = await fetch('exercises/manifest.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Failed to load manifest');
+      const manifest = await res.json();
+      const items = (manifest.items || [])
+        .filter(it => it.enabled !== false)
+        .sort((a,b) => (a.order ?? 999) - (b.order ?? 999));
+
+      const wrap = document.getElementById('nextUpList');
+      wrap.innerHTML = '';
+
+      items.forEach((it, idx) => {
+        const container = document.createElement('div');
+        container.style.marginBottom = '.75rem';
+
+        const title = document.createElement('div');
+        title.style.fontWeight = '600';
+        title.style.marginBottom = '.25rem';
+        title.textContent = it.title;
+
+        const desc = document.createElement('div');
+        desc.style.color = '#555';
+        desc.style.marginBottom = '.5rem';
+        desc.textContent = it.description || '';
+
+        const isPrimary = idx === 0; // first item highlighted like the main CTA
+        const href = it.type === 'tool' ? it.path : 'tra.html'; 
+        // For JSON-defined exercises you may navigate to a dedicated page (e.g., tra.html).
+        // If you build a generic renderer later, point to that instead.
+
+        const btn = makeBtn(isPrimary ? `Start: ${it.title}` : `Open: ${it.title}`, href, isPrimary);
+
+        container.appendChild(title);
+        container.appendChild(desc);
+        container.appendChild(btn);
+        wrap.appendChild(container);
+      });
+
+      if (items.length) {
+        document.getElementById('nextUpCard').style.display = 'block';
+      }
+    } catch (e) {
+      console.warn('Next up list unavailable:', e);
+    }
+  }
+
+  // Ensure this runs AFTER your existing code that wires up the Save button
+  document.addEventListener('DOMContentLoaded', loadNextUp);
+</script>
 
   <!-- 4) Assessments & Tools (this section is BELOW the primary CTA) -->
   <div class="card" id="card-tools">
