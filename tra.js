@@ -103,6 +103,17 @@ function clearAll() {
   document.getElementById("result").textContent = "";
 }
 
+async function postCoach(prompt, profile) {
+  const base = localStorage.getItem("acm_backend_base") || "http://localhost:3000"; // dev default
+  const res = await fetch(`${base}/api/coach`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, profile })
+  });
+  if (!res.ok) throw new Error(`Coach API ${res.status}`);
+  return res.json();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
