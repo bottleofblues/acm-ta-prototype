@@ -1,1 +1,35 @@
-
+{
+  "id": "transition-risk-assessment",
+  "title": "Transition Risk Assessment",
+  "duration_minutes": 4,
+  "objective": "Orient the learner to the 90-day framework by gauging the relevance and perceived difficulty of common transition demands; compute a Transition Risk Index and suggest focus areas.",
+  "actions": [
+    "Moving to a new industry or profession",
+    "Joining a new company",
+    "Moving to a new unit or group in the same company",
+    "Being promoted to a higher level",
+    "Leading former peers (assuming you have been promoted)",
+    "Moving from one function to another (e.g., sales to marketing)",
+    "Taking on a cross-functional leadership role for the first time",
+    "Moving geographically",
+    "Entering a new national or ethnic culture",
+    "Having to do two jobs at the same time (finishing old role while starting new one)",
+    "Taking on a newly created role (as opposed to an existing role)",
+    "Entering an organization in which major change already is going on"
+  ],
+  "scoring": {
+    "method": "sum_difficulties_if_relevant",
+    "output_field": "transition_risk_index",
+    "buckets": [
+      { "label": "Low", "max": 30, "guidance": "Low transitions risks. Focus on early wins, stakeholder mapping, and building organizational learning." },
+      { "label": "Moderate", "max": 60, "guidance": "Moderate risks. Prioritize key vulnerabilities, sequence early learning, and structure manager check-ins weekly." },
+      { "label": "High", "max": 120, "guidance": "High transition risks. Narrow scope, secure a sponsor early, accelerate learning, and avoid the Action Imperative trap." }
+    ]
+  },
+  "next_steps": [
+    "Invite learner to journal key concerns and patterns.",
+    "Recommend relevant reading from The First 90 Days.",
+    "Prompt learner to schedule a 30-minute check-in with their manager or sponsor.",
+    "Queue up the Break-Even Point visualization for conceptual reinforcement."
+  ]
+}
