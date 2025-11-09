@@ -12,10 +12,7 @@
     th { position: sticky; top: 0; background: #fafafa; }
     input[type="number"] { width: 70px; }
     .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-    /* Primary button style (matches your Save & Continue look) */
-    .btn { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
-    .btn-link { text-decoration: none; }
+    button { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
     .muted { color: #666; font-size: .9rem; }
     .badge { display: inline-block; padding: .25rem .5rem; border-radius: 999px; border: 1px solid #111; }
     .low { background: #e8f5e9; }
@@ -23,23 +20,20 @@
     .high { background: #ffebee; }
     .note { width: 100%; min-height: 100px; }
     .topbar a { text-decoration: none; }
-    .section-title { margin: 0 0 .25rem 0; }
   </style>
 </head>
 <body>
-  <!-- Header / brand -->
   <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
     <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
     <div class="actions">
-      <a class="btn-link" href="index.html">← Back to TA Home</a>
+      <a href="index.html">← Back to TA Home</a>
     </div>
   </div>
 
-  <h1 class="section-title">Transition Risk Assessment</h1>
+  <h1>Transition Risk Assessment</h1>
   <p class="muted">3–4 minutes. For each item, mark whether it's relevant to your transition. If relevant, rate difficulty (1–10).</p>
 
-  <!-- Assessment table -->
-  <div class="card" id="tra-assessment">
+  <div class="card">
     <table id="traTable">
       <thead>
         <tr>
@@ -53,37 +47,22 @@
     </table>
   </div>
 
-  <!-- Assessment controls + result -->
   <div class="card">
     <div class="actions">
-      <button id="calc" class="btn">Calculate Risk Index</button>
-      <button id="save" class="btn">Save Progress</button>
-      <button id="clear" class="btn">Clear</button>
+      <button id="calc">Calculate Risk Index</button>
+      <button id="save">Save Progress</button>
+      <button id="clear">Clear</button>
     </div>
-    <p id="result" class="muted" style="margin-top:.5rem;"></p>
+    <p id="result" class="muted"></p>
   </div>
 
-  <!-- Journaling (optional) -->
   <div class="card">
-    <h2 class="section-title">Journal (Optional)</h2>
+    <h2>Journal (Optional)</h2>
     <p class="muted">Capture concerns or insights that surfaced. This helps shape your 30/60/90 and early wins.</p>
     <textarea id="journal" class="note" placeholder="What patterns do you see? Where will you need allies? What will you deliberately not do in the first 30 days?"></textarea>
   </div>
 
-  <!-- Tools & Visuals (where future items can stack in sequence) -->
-  <div class="card" id="tools-visuals">
-    <h2 class="section-title">Tools &amp; Visuals</h2>
-    <p class="muted">Open supporting tools that translate your assessment into plans and visuals.</p>
-    <div class="actions">
-      <!-- Break-Even Point button placed AFTER the assessment, styled like primary buttons -->
-      <a class="btn-link" href="breakeven.html"><button class="btn" id="openBEP">Open Break-Even Point Visualization</button></a>
-    </div>
-    <!-- Future tools can be added here in order, e.g.:
-         <a class="btn-link" href="stakeholder-map.html"><button class="btn">Stakeholder Map</button></a>
-         <a class="btn-link" href="early-wins.html"><button class="btn">Early Wins Planner</button></a>
-    -->
-  </div>
-
-  <script src="tra.js"></script>
+  <!-- cache-bust with ?v=3 to avoid stale JS -->
+  <script src="tra.js?v=3" defer></script>
 </body>
 </html>
