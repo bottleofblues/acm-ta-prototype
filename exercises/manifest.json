@@ -6,7 +6,7 @@
       "id": "transition-risk-assessment",
       "title": "Transition Risk Assessment",
       "description": "Mark relevance and difficulty to compute your Transition Risk Index.",
-      "path": "/exercises/transition-risk-assessment.json",
+      "path": "exercises/transition-risk-assessment.json",
       "enabled": true,
       "order": 10,
       "release_date": "2025-11-01",
@@ -16,10 +16,10 @@
       "id": "break-even-point",
       "title": "Break-Even Point Visualization",
       "description": "Simulate ramp-up and see your break-even day.",
-      "path": "/breakeven.html",
+      "path": "breakeven.html",
       "enabled": true,
       "order": 20,
-      "type": "tool" 
+      "type": "tool"
     }
   ]
 }
