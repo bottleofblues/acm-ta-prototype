@@ -20,6 +20,24 @@
     .high { background: #ffebee; }
     .note { width: 100%; min-height: 100px; }
     .topbar a { text-decoration: none; }
+
+    /* Shared buttons (optional; keeps look consistent with index.html) */
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #111;
+      border: 1px solid #333;
+    }
   </style>
 </head>
 <body>
@@ -60,12 +78,15 @@
     <h2>Journal (Optional)</h2>
     <p class="muted">Capture concerns or insights that surfaced. This helps shape your 30/60/90 and early wins.</p>
     <textarea id="journal" class="note" placeholder="What patterns do you see? Where will you need allies? What will you deliberately not do in the first 30 days?"></textarea>
-  </div>
 
-<div style="margin-top:.5rem; display:flex; gap:.5rem; flex-wrap:wrap;">
-  <button id="getFeedback">Get Feedback</button>
-</div>
-<p id="coachReply" class="muted"></p>
+    <!-- Correct placement: inside the card -->
+    <div style="margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+      <button class="btn" id="getFeedback" type="button">Get Feedback from ACM TA</button>
+    </div>
+
+    <!-- Where the TA output appears -->
+    <p id="coachReply" class="muted" style="margin-top:1rem; white-space:pre-wrap;" aria-live="polite"></p>
+  </div>
 
   <!-- cache-bust with ?v=3 to avoid stale JS -->
   <script src="tra.js?v=3" defer></script>
