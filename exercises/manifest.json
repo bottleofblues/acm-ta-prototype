@@ -1,1 +1,13 @@
+{
+  "version": 1,
+  "sequence": [
+    {
+      "id": "transition-risk-assessment",
+      "title": "Transition Risk Assessment",
+      "path": "/exercises/transition-risk-assessment.json",
+      "release": "immediate",
+      "locked": false
+    }
+  ]
+}
 
