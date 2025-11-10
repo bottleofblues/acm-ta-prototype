@@ -1,20 +1,8 @@
-// ---- CONFIG ----
-const BACKEND_KEY = "acm_backend_base"; // e.g., "http://localhost:3000"
+// ===== Config =====
+const BACKEND = () => localStorage.getItem("acm_backend_base") || "http://localhost:3000";
 const STORAGE_KEY = "acm_tra_v1";
 
-// ---- API helper ----
-async function postCoach(prompt, profile) {
-  const base = localStorage.getItem(BACKEND_KEY) || "http://localhost:3000";
-  const res = await fetch(`${base}/api/coach`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, profile })
-  });
-  if (!res.ok) throw new Error(`Coach API ${res.status}`);
-  return res.json();
-}
-
-// ---- TRA table ----
+// ===== Data =====
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -30,12 +18,13 @@ const ACTIONS = [
   "Entering an organization in which major change already is going on"
 ];
 
+// ===== Helpers =====
 function renderTable() {
   const tbody = document.querySelector("#traTable tbody");
   tbody.innerHTML = "";
   const saved = load() || {};
   ACTIONS.forEach((action, idx) => {
-    const row = document.createElement("tr");
+    const tr = document.createElement("tr");
 
     const tdAction = document.createElement("td");
     tdAction.textContent = action;
@@ -44,7 +33,7 @@ function renderTable() {
     const rel = document.createElement("input");
     rel.type = "checkbox";
     rel.id = `rel_${idx}`;
-    rel.checked = !!(saved[idx]?.relevance);
+    rel.checked = saved[idx]?.relevance ?? false;
     tdRel.appendChild(rel);
 
     const tdDiff = document.createElement("td");
@@ -64,29 +53,27 @@ function renderTable() {
     notes.id = `note_${idx}`;
     tdNotes.appendChild(notes);
 
-    row.appendChild(tdAction);
-    row.appendChild(tdRel);
-    row.appendChild(tdDiff);
-    row.appendChild(tdNotes);
-
-    tbody.appendChild(row);
+    tr.appendChild(tdAction);
+    tr.appendChild(tdRel);
+    tr.appendChild(tdDiff);
+    tr.appendChild(tdNotes);
+    tbody.appendChild(tr);
   });
 
-  const journalEl = document.getElementById("journal");
-  if (journalEl) journalEl.value = (saved.journal || "");
+  const j = document.getElementById("journal");
+  if (j) j.value = saved.journal || "";
 }
 
 function collect() {
-  const data = [];
-  ACTIONS.forEach((action, idx) => {
+  const rows = ACTIONS.map((action, idx) => {
     const relevance = document.getElementById(`rel_${idx}`).checked;
-    const difficultyRaw = document.getElementById(`diff_${idx}`).value.trim();
+    const raw = document.getElementById(`diff_${idx}`).value.trim();
     const notes = document.getElementById(`note_${idx}`).value.trim();
-    const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
-    data.push({ action, relevance, difficulty, notes });
+    const difficulty = raw === "" ? null : Number(raw);
+    return { action, relevance, difficulty, notes };
   });
   const journal = (document.getElementById("journal")?.value || "").trim();
-  return { rows: data, journal };
+  return { rows, journal };
 }
 
 function score(payload) {
@@ -102,7 +89,7 @@ function score(payload) {
 
 function save(payload) {
   const out = {};
-  payload.rows.forEach((r, idx) => { out[idx] = { relevance: r.relevance, difficulty: r.difficulty, notes: r.notes }; });
+  payload.rows.forEach((r, i) => out[i] = { relevance: r.relevance, difficulty: r.difficulty, notes: r.notes });
   out.journal = payload.journal;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
 }
@@ -111,64 +98,67 @@ function load() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
 }
 
-function clearAll() {
-  localStorage.removeItem(STORAGE_KEY);
-  renderTable();
-  document.getElementById("result").textContent = "";
+async function postCoach(prompt, profile) {
+  const res = await fetch(`${BACKEND()}/api/coach`, {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({ prompt, profile })
+  });
+  if (!res.ok) throw new Error(`Coach API ${res.status}`);
+  return res.json();
 }
 
-// ---- Wire up UI once ----
+// ===== Wire UI =====
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
-  // Calculate
   document.getElementById("calc").addEventListener("click", () => {
-    const payload = collect();
-    const { total, bucket, guidance } = score(payload);
-    document.getElementById("result").innerHTML = `
-      Transition Risk Index: <strong>${total}</strong>
-      &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
-      <br>${guidance}
-    `;
+    const { total, bucket, guidance } = score(collect());
+    document.getElementById("result").innerHTML =
+      `Transition Risk Index: <strong>${total}</strong>
+       &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
+       <br>${guidance}`;
   });
 
-  // Save
   document.getElementById("save").addEventListener("click", () => {
     save(collect());
     document.getElementById("result").textContent = "Progress saved locally on this device.";
   });
 
-  // Clear
-  document.getElementById("clear").addEventListener("click", clearAll);
+  document.getElementById("clear").addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    renderTable();
+    document.getElementById("result").textContent = "";
+  });
 
-  // Get Feedback (single clean handler)
+  // Coaching button
   const btn = document.getElementById("getFeedback");
-  const out = document.getElementById("coachReply");
-  if (btn && out) {
-    btn.addEventListener("click", async () => {
-      out.textContent = "Thinking…";
-      const payload = collect();
-      const { total, bucket } = score(payload);
-      const journal = payload.journal || "(no journal entry provided)";
+  const replyBox = document.getElementById("coachReply");
 
-      // Profile from welcome page
-      let profile = {};
-      try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
+  btn.addEventListener("click", async () => {
+    replyBox.textContent = "Thinking…";
 
-      const prompt = [
-        "Provide concise coaching feedback (3–5 bullets) for a new executive in first 90 days.",
-        `Transition Risk Index: ${total} (${bucket})`,
-        `Journal: ${journal}`
-      ].join("\n");
+    const payload = collect();
+    const { total, bucket } = score(payload);
+    const journalText = payload.journal || "(no journal entry provided)";
 
-      try {
-        const data = await postCoach(prompt, profile);
-        const reply = data.reply || data.note || "Feedback (stub).";
-        out.textContent = reply;
-      } catch (e) {
-        console.error(e);
-        out.textContent = "Could not reach the coach service.";
-      }
-    });
-  }
+    // load learner profile from welcome page
+    let profile = {};
+    try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
+
+    const prompt = [
+      "Provide concise coaching feedback (3-5 bullets) for a new executive in first 90 days.",
+      `Transition Risk Index: ${total} (${bucket})`,
+      `Journal: ${journalText}`,
+      "End with 3 clear actions for the next 7 days."
+    ].join("\n");
+
+    try {
+      const data = await postCoach(prompt, profile);
+      replyBox.textContent = data.reply || data.note || "(no response)";
+    } catch (e) {
+      console.error(e);
+      replyBox.textContent = "ACM TA could not respond.";
+    }
+  });
 });
