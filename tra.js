@@ -1,8 +1,10 @@
-// -----------------------------
-// Config & Backend POST helper
-// -----------------------------
+// ---- CONFIG ----
+const BACKEND_KEY = "acm_backend_base"; // e.g., "http://localhost:3000"
+const STORAGE_KEY = "acm_tra_v1";
+
+// ---- API helper ----
 async function postCoach(prompt, profile) {
-  const base = localStorage.getItem("acm_backend_base") || "http://localhost:3000"; // dev default
+  const base = localStorage.getItem(BACKEND_KEY) || "http://localhost:3000";
   const res = await fetch(`${base}/api/coach`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -12,9 +14,7 @@ async function postCoach(prompt, profile) {
   return res.json();
 }
 
-// -----------------------------
-// Transition Risk Assessment — ACM TA
-// -----------------------------
+// ---- TRA table ----
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -30,8 +30,6 @@ const ACTIONS = [
   "Entering an organization in which major change already is going on"
 ];
 
-const STORAGE_KEY = "acm_tra_v1";
-
 function renderTable() {
   const tbody = document.querySelector("#traTable tbody");
   tbody.innerHTML = "";
@@ -46,7 +44,7 @@ function renderTable() {
     const rel = document.createElement("input");
     rel.type = "checkbox";
     rel.id = `rel_${idx}`;
-    rel.checked = saved[idx]?.relevance ?? false;
+    rel.checked = !!(saved[idx]?.relevance);
     tdRel.appendChild(rel);
 
     const tdDiff = document.createElement("td");
@@ -74,8 +72,8 @@ function renderTable() {
     tbody.appendChild(row);
   });
 
-  const j = document.getElementById("journal");
-  if (j) j.value = (saved.journal || "");
+  const journalEl = document.getElementById("journal");
+  if (journalEl) journalEl.value = (saved.journal || "");
 }
 
 function collect() {
@@ -87,8 +85,7 @@ function collect() {
     const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
     data.push({ action, relevance, difficulty, notes });
   });
-  const journalEl = document.getElementById("journal");
-  const journal = journalEl ? journalEl.value.trim() : "";
+  const journal = (document.getElementById("journal")?.value || "").trim();
   return { rows: data, journal };
 }
 
@@ -117,73 +114,60 @@ function load() {
 function clearAll() {
   localStorage.removeItem(STORAGE_KEY);
   renderTable();
-  const result = document.getElementById("result");
-  if (result) result.textContent = "";
+  document.getElementById("result").textContent = "";
 }
 
-// -----------------------------
-// Wire up the page
-// -----------------------------
+// ---- Wire up UI once ----
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
-  const calcBtn = document.getElementById("calc");
-  const saveBtn = document.getElementById("save");
-  const clearBtn = document.getElementById("clear");
-  const feedbackBtn = document.getElementById("getFeedback");
-  const coachReply = document.getElementById("coachReply");
+  // Calculate
+  document.getElementById("calc").addEventListener("click", () => {
+    const payload = collect();
+    const { total, bucket, guidance } = score(payload);
+    document.getElementById("result").innerHTML = `
+      Transition Risk Index: <strong>${total}</strong>
+      &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
+      <br>${guidance}
+    `;
+  });
 
-  if (calcBtn) {
-    calcBtn.addEventListener("click", () => {
-      const payload = collect();
-      const { total, bucket, guidance } = score(payload);
-      const result = document.getElementById("result");
-      if (result) {
-        result.innerHTML = `
-          Transition Risk Index: <strong>${total}</strong>
-          &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
-          <br>${guidance}
-        `;
-      }
-    });
-  }
+  // Save
+  document.getElementById("save").addEventListener("click", () => {
+    save(collect());
+    document.getElementById("result").textContent = "Progress saved locally on this device.";
+  });
 
-  if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      save(collect());
-      const result = document.getElementById("result");
-      if (result) result.textContent = "Progress saved locally on this device.";
-    });
-  }
+  // Clear
+  document.getElementById("clear").addEventListener("click", clearAll);
 
-  if (clearBtn) {
-    clearBtn.addEventListener("click", clearAll);
-  }
-
-  if (feedbackBtn && coachReply) {
-    feedbackBtn.addEventListener("click", async () => {
-      coachReply.textContent = "Thinking…";
-
+  // Get Feedback (single clean handler)
+  const btn = document.getElementById("getFeedback");
+  const out = document.getElementById("coachReply");
+  if (btn && out) {
+    btn.addEventListener("click", async () => {
+      out.textContent = "Thinking…";
       const payload = collect();
       const { total, bucket } = score(payload);
-      const journalText = payload.journal || "(no journal entry provided)";
+      const journal = payload.journal || "(no journal entry provided)";
 
+      // Profile from welcome page
       let profile = {};
       try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
 
       const prompt = [
-        "Provide concise coaching feedback (3–5 bullets) for a newly hired executive in their first 90 days.",
+        "Provide concise coaching feedback (3–5 bullets) for a new executive in first 90 days.",
         `Transition Risk Index: ${total} (${bucket})`,
-        `Journal: ${journalText}`,
-        "Focus on next 7 days and one early win."
+        `Journal: ${journal}`
       ].join("\n");
 
       try {
-        const result = await postCoach(prompt, profile);
-        coachReply.textContent = result.reply || result.note || "(no response)";
-      } catch (err) {
-        coachReply.textContent = "ACM TA could not respond.";
-        console.error(err);
+        const data = await postCoach(prompt, profile);
+        const reply = data.reply || data.note || "Feedback (stub).";
+        out.textContent = reply;
+      } catch (e) {
+        console.error(e);
+        out.textContent = "Could not reach the coach service.";
       }
     });
   }
