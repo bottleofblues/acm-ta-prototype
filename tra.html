@@ -89,6 +89,21 @@
   </div>
 
   <!-- cache-bust with ?v=3 to avoid stale JS -->
-  <script src="tra.js?v=4" defer></script>
+  <script>
+  (async function() {
+    try {
+      const res = await fetch('config.json', { cache: 'no-store' });
+      if (res.ok) {
+        const cfg = await res.json();
+        if (cfg.backendBase) {
+          localStorage.setItem('acm_backend_base', cfg.backendBase);
+        }
+      }
+    } catch (e) {
+      console.warn('No config.json found or failed to load:', e);
+    }
+  })();
+</script>
+<script src="tra.js?v=4" defer></script>
 </body>
 </html>
