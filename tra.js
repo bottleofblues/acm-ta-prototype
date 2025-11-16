@@ -1,29 +1,14 @@
 // Transition Risk Assessment — ACM TA
 
-// 1) Where is the backend?
-//    In production, we default to your Vercel backend.
-//    If you want to override for local testing, you can set
-//    localStorage.setItem('acm_backend_base', 'http://localhost:3000')
-function getBackendBase() {
-  const stored = localStorage.getItem("acm_backend_base");
-  return stored || "https://acm-ta-backend.vercel.app";
-}
+// 1) Where to send coaching requests
+//    In production this points at your Vercel backend.
+//    If you ever rename the backend project, update this URL.
+const BACKEND_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://acm-ta-backend.vercel.app";
 
-// 2) Helper to talk to the ACM Coach API
-async function postCoach(prompt, profile) {
-  const base = getBackendBase();
-  const res = await fetch(`${base}/api/coach`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, profile })
-  });
-  if (!res.ok) {
-    throw new Error(`Coach API ${res.status}`);
-  }
-  return res.json();
-}
-
-// 3) Existing TRA logic (unchanged except for wiring)
+// 2) Exercise items
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -40,6 +25,8 @@ const ACTIONS = [
 ];
 
 const STORAGE_KEY = "acm_tra_v1";
+
+// ----- Core table helpers -----
 
 function renderTable() {
   const tbody = document.querySelector("#traTable tbody");
@@ -83,9 +70,9 @@ function renderTable() {
     tbody.appendChild(row);
   });
 
-  const j = document.getElementById("journal");
-  if (j) {
-    j.value = saved.journal || "";
+  const journalEl = document.getElementById("journal");
+  if (journalEl) {
+    journalEl.value = saved.journal || "";
   }
 }
 
@@ -93,28 +80,39 @@ function collect() {
   const data = [];
   ACTIONS.forEach((action, idx) => {
     const relevance = document.getElementById(`rel_${idx}`).checked;
-    const difficultyRaw = document.getElementById(`diff_${idx}`).value.trim();
-    const notes = document.getElementById(`note_${idx}`).value.trim();
-    const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
+    const difficultyRaw = document
+      .getElementById(`diff_${idx}`)
+      .value.trim();
+    const notes = document
+      .getElementById(`note_${idx}`)
+      .value.trim();
+    const difficulty =
+      difficultyRaw === "" ? null : Number(difficultyRaw);
     data.push({ action, relevance, difficulty, notes });
   });
-  const journal = document.getElementById("journal")?.value.trim() || "";
+  const journalEl = document.getElementById("journal");
+  const journal = journalEl ? journalEl.value.trim() : "";
   return { rows: data, journal };
 }
 
 function score(payload) {
   let total = 0;
-  payload.rows.forEach(r => {
-    if (r.relevance && typeof r.difficulty === "number") total += r.difficulty;
+  payload.rows.forEach((r) => {
+    if (r.relevance && typeof r.difficulty === "number") {
+      total += r.difficulty;
+    }
   });
   let bucket = "Low";
-  let guidance = "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
+  let guidance =
+    "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
   if (total > 60) {
     bucket = "High";
-    guidance = "Sequence learning, limit scope, and tighten check-ins with sponsor.";
+    guidance =
+      "Sequence learning, limit scope, and tighten check-ins with your sponsor.";
   } else if (total > 30) {
     bucket = "Moderate";
-    guidance = "Target 2–3 risk clusters; time-box learning and secure early allies.";
+    guidance =
+      "Target 2–3 risk clusters; time-box learning and secure early allies.";
   }
   return { total, bucket, guidance };
 }
@@ -125,7 +123,7 @@ function save(payload) {
     out[idx] = {
       relevance: r.relevance,
       difficulty: r.difficulty,
-      notes: r.notes
+      notes: r.notes,
     };
   });
   out.journal = payload.journal;
@@ -147,7 +145,23 @@ function clearAll() {
   if (result) result.textContent = "";
 }
 
-// 4) Hook up buttons when the page loads
+// ----- Coach API helper -----
+
+async function postCoach(prompt, profile) {
+  const res = await fetch(`${BACKEND_BASE}/api/coach`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, profile }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Coach API ${res.status}`);
+  }
+  return res.json();
+}
+
+// ----- Wire up UI -----
+
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
@@ -155,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("save");
   const clearBtn = document.getElementById("clear");
   const feedbackBtn = document.getElementById("getFeedback");
-  const replyBox = document.getElementById("coachReply");
+  const coachReply = document.getElementById("coachReply");
 
   if (calcBtn) {
     calcBtn.addEventListener("click", () => {
@@ -183,45 +197,40 @@ document.addEventListener("DOMContentLoaded", () => {
     clearBtn.addEventListener("click", clearAll);
   }
 
-  // 💬 Get Feedback from ACM TA
-  if (feedbackBtn && replyBox) {
+  if (feedbackBtn && coachReply) {
     feedbackBtn.addEventListener("click", async () => {
-      const btn = feedbackBtn;
-      const box = replyBox;
-      btn.disabled = true;
-      const originalLabel = btn.textContent;
-      btn.textContent = "Thinking…";
-      box.textContent = "";
+      coachReply.textContent = "Thinking…";
 
       const payload = collect();
       const { total, bucket } = score(payload);
-      const journalText = payload.journal || "(no journal entry provided)";
+      const journal = payload.journal || "(no journal entry)";
 
-      // Pull the learner profile from the welcome page (index.html)
+      // Pull whatever we saved on the welcome page
       let profile = {};
       try {
-        profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
+        profile = JSON.parse(
+          localStorage.getItem("acm_init_v1") || "{}"
+        );
       } catch {
         profile = {};
       }
 
-      const prompt = [
-        "You are an executive transition coach.",
-        "Provide concise, practical guidance (3–5 bullets) for a newly hired Director/VP/Senior Executive in their first 90 days.",
-        `Transition Risk Index: ${total} (${bucket})`,
-        `Journal entry: ${journalText}`,
-        "Focus on actions for the next 7–14 days: stakeholders, early wins, and personal routines."
-      ].join("\n");
+      const prompt =
+        [
+          "Provide concise coaching feedback (3–5 bullets) for a new executive in their first 90 days.",
+          `Transition Risk Index: ${total} (${bucket})`,
+          `Journal: ${journal}`,
+          "Focus on the next 7 days. Avoid generic platitudes; be concrete and practical.",
+        ].join("\n");
 
       try {
-        const result = await postCoach(prompt, profile);
-        box.textContent = result.reply || result.note || "(No response from coach.)";
-      } catch (err) {
-        console.error(err);
-        box.textContent = "ACM TA could not respond. Please try again in a moment.";
-      } finally {
-        btn.disabled = false;
-        btn.textContent = originalLabel;
+        const data = await postCoach(prompt, profile);
+        const reply = data.reply || data.note || "Feedback ready (stub).";
+        coachReply.textContent = reply;
+      } catch (e) {
+        console.error(e);
+        coachReply.textContent =
+          "ACM TA could not respond. Please try again in a moment.";
       }
     });
   }
