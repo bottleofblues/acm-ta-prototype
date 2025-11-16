@@ -1,8 +1,29 @@
-// ===== Config =====
-const BACKEND = () => localStorage.getItem("acm_backend_base") || "http://localhost:3000";
-const STORAGE_KEY = "acm_tra_v1";
+// Transition Risk Assessment — ACM TA
 
-// ===== Data =====
+// 1) Where is the backend?
+//    In production, we default to your Vercel backend.
+//    If you want to override for local testing, you can set
+//    localStorage.setItem('acm_backend_base', 'http://localhost:3000')
+function getBackendBase() {
+  const stored = localStorage.getItem("acm_backend_base");
+  return stored || "https://acm-ta-backend.vercel.app";
+}
+
+// 2) Helper to talk to the ACM Coach API
+async function postCoach(prompt, profile) {
+  const base = getBackendBase();
+  const res = await fetch(`${base}/api/coach`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, profile })
+  });
+  if (!res.ok) {
+    throw new Error(`Coach API ${res.status}`);
+  }
+  return res.json();
+}
+
+// 3) Existing TRA logic (unchanged except for wiring)
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -18,13 +39,14 @@ const ACTIONS = [
   "Entering an organization in which major change already is going on"
 ];
 
-// ===== Helpers =====
+const STORAGE_KEY = "acm_tra_v1";
+
 function renderTable() {
   const tbody = document.querySelector("#traTable tbody");
   tbody.innerHTML = "";
   const saved = load() || {};
   ACTIONS.forEach((action, idx) => {
-    const tr = document.createElement("tr");
+    const row = document.createElement("tr");
 
     const tdAction = document.createElement("td");
     tdAction.textContent = action;
@@ -53,27 +75,31 @@ function renderTable() {
     notes.id = `note_${idx}`;
     tdNotes.appendChild(notes);
 
-    tr.appendChild(tdAction);
-    tr.appendChild(tdRel);
-    tr.appendChild(tdDiff);
-    tr.appendChild(tdNotes);
-    tbody.appendChild(tr);
+    row.appendChild(tdAction);
+    row.appendChild(tdRel);
+    row.appendChild(tdDiff);
+    row.appendChild(tdNotes);
+
+    tbody.appendChild(row);
   });
 
   const j = document.getElementById("journal");
-  if (j) j.value = saved.journal || "";
+  if (j) {
+    j.value = saved.journal || "";
+  }
 }
 
 function collect() {
-  const rows = ACTIONS.map((action, idx) => {
+  const data = [];
+  ACTIONS.forEach((action, idx) => {
     const relevance = document.getElementById(`rel_${idx}`).checked;
-    const raw = document.getElementById(`diff_${idx}`).value.trim();
+    const difficultyRaw = document.getElementById(`diff_${idx}`).value.trim();
     const notes = document.getElementById(`note_${idx}`).value.trim();
-    const difficulty = raw === "" ? null : Number(raw);
-    return { action, relevance, difficulty, notes };
+    const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
+    data.push({ action, relevance, difficulty, notes });
   });
-  const journal = (document.getElementById("journal")?.value || "").trim();
-  return { rows, journal };
+  const journal = document.getElementById("journal")?.value.trim() || "";
+  return { rows: data, journal };
 }
 
 function score(payload) {
@@ -81,84 +107,122 @@ function score(payload) {
   payload.rows.forEach(r => {
     if (r.relevance && typeof r.difficulty === "number") total += r.difficulty;
   });
-  let bucket = "Low", guidance = "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
-  if (total > 60) { bucket = "High"; guidance = "Sequence learning, limit scope, and tighten check-ins with sponsor."; }
-  else if (total > 30) { bucket = "Moderate"; guidance = "Target 2–3 risk clusters; time-box learning and secure early allies."; }
+  let bucket = "Low";
+  let guidance = "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
+  if (total > 60) {
+    bucket = "High";
+    guidance = "Sequence learning, limit scope, and tighten check-ins with sponsor.";
+  } else if (total > 30) {
+    bucket = "Moderate";
+    guidance = "Target 2–3 risk clusters; time-box learning and secure early allies.";
+  }
   return { total, bucket, guidance };
 }
 
 function save(payload) {
   const out = {};
-  payload.rows.forEach((r, i) => out[i] = { relevance: r.relevance, difficulty: r.difficulty, notes: r.notes });
+  payload.rows.forEach((r, idx) => {
+    out[idx] = {
+      relevance: r.relevance,
+      difficulty: r.difficulty,
+      notes: r.notes
+    };
+  });
   out.journal = payload.journal;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
 }
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return null;
+  }
 }
 
-async function postCoach(prompt, profile) {
-  const res = await fetch(`${BACKEND()}/api/coach`, {
-    method: "POST",
-    headers: { "Content-Type":"application/json" },
-    body: JSON.stringify({ prompt, profile })
-  });
-  if (!res.ok) throw new Error(`Coach API ${res.status}`);
-  return res.json();
+function clearAll() {
+  localStorage.removeItem(STORAGE_KEY);
+  renderTable();
+  const result = document.getElementById("result");
+  if (result) result.textContent = "";
 }
 
-// ===== Wire UI =====
+// 4) Hook up buttons when the page loads
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
-  document.getElementById("calc").addEventListener("click", () => {
-    const { total, bucket, guidance } = score(collect());
-    document.getElementById("result").innerHTML =
-      `Transition Risk Index: <strong>${total}</strong>
-       &nbsp; <span class="badge ${bucket === 'Low' ? 'low' : bucket === 'Moderate' ? 'mod' : 'high'}">${bucket}</span>
-       <br>${guidance}`;
-  });
-
-  document.getElementById("save").addEventListener("click", () => {
-    save(collect());
-    document.getElementById("result").textContent = "Progress saved locally on this device.";
-  });
-
-  document.getElementById("clear").addEventListener("click", () => {
-    localStorage.removeItem(STORAGE_KEY);
-    renderTable();
-    document.getElementById("result").textContent = "";
-  });
-
-  // Coaching button
-  const btn = document.getElementById("getFeedback");
+  const calcBtn = document.getElementById("calc");
+  const saveBtn = document.getElementById("save");
+  const clearBtn = document.getElementById("clear");
+  const feedbackBtn = document.getElementById("getFeedback");
   const replyBox = document.getElementById("coachReply");
 
-  btn.addEventListener("click", async () => {
-    replyBox.textContent = "Thinking…";
+  if (calcBtn) {
+    calcBtn.addEventListener("click", () => {
+      const payload = collect();
+      const { total, bucket, guidance } = score(payload);
+      document.getElementById("result").innerHTML = `
+        Transition Risk Index: <strong>${total}</strong>
+        &nbsp; <span class="badge ${
+          bucket === "Low" ? "low" : bucket === "Moderate" ? "mod" : "high"
+        }">${bucket}</span>
+        <br>${guidance}
+      `;
+    });
+  }
 
-    const payload = collect();
-    const { total, bucket } = score(payload);
-    const journalText = payload.journal || "(no journal entry provided)";
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      save(collect());
+      document.getElementById("result").textContent =
+        "Progress saved locally on this device.";
+    });
+  }
 
-    // load learner profile from welcome page
-    let profile = {};
-    try { profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}"); } catch {}
+  if (clearBtn) {
+    clearBtn.addEventListener("click", clearAll);
+  }
 
-    const prompt = [
-      "Provide concise coaching feedback (3-5 bullets) for a new executive in first 90 days.",
-      `Transition Risk Index: ${total} (${bucket})`,
-      `Journal: ${journalText}`,
-      "End with 3 clear actions for the next 7 days."
-    ].join("\n");
+  // 💬 Get Feedback from ACM TA
+  if (feedbackBtn && replyBox) {
+    feedbackBtn.addEventListener("click", async () => {
+      const btn = feedbackBtn;
+      const box = replyBox;
+      btn.disabled = true;
+      const originalLabel = btn.textContent;
+      btn.textContent = "Thinking…";
+      box.textContent = "";
 
-    try {
-      const data = await postCoach(prompt, profile);
-      replyBox.textContent = data.reply || data.note || "(no response)";
-    } catch (e) {
-      console.error(e);
-      replyBox.textContent = "ACM TA could not respond.";
-    }
-  });
+      const payload = collect();
+      const { total, bucket } = score(payload);
+      const journalText = payload.journal || "(no journal entry provided)";
+
+      // Pull the learner profile from the welcome page (index.html)
+      let profile = {};
+      try {
+        profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
+      } catch {
+        profile = {};
+      }
+
+      const prompt = [
+        "You are an executive transition coach.",
+        "Provide concise, practical guidance (3–5 bullets) for a newly hired Director/VP/Senior Executive in their first 90 days.",
+        `Transition Risk Index: ${total} (${bucket})`,
+        `Journal entry: ${journalText}`,
+        "Focus on actions for the next 7–14 days: stakeholders, early wins, and personal routines."
+      ].join("\n");
+
+      try {
+        const result = await postCoach(prompt, profile);
+        box.textContent = result.reply || result.note || "(No response from coach.)";
+      } catch (err) {
+        console.error(err);
+        box.textContent = "ACM TA could not respond. Please try again in a moment.";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }
+    });
+  }
 });
