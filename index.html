@@ -5,169 +5,498 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Paul Bickford Solutions • Advanced Career Mastery — TA</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
-    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
-    label { display: block; font-weight: 600; margin-top: 0.5rem; }
-    input, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 8px; }
-    small { color: #555; }
+    :root {
+      --pb-bg: #0b1120;
+      --pb-surface: #ffffff;
+      --pb-surface-soft: #f3f4f6;
+      --pb-border: #e5e7eb;
+      --pb-accent: #0ea5e9;
+      --pb-accent-soft: #e0f2fe;
+      --pb-text-main: #020617;
+      --pb-text-muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 40%, #020617 100%);
+      color: var(--pb-text-main);
+    }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 3rem;
+    }
+
+    .card {
+      background: var(--pb-surface);
+      border-radius: 16px;
+      border: 1px solid var(--pb-border);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .card-header {
+      margin-bottom: 0.5rem;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--pb-text-muted);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      margin-bottom: 0.15rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: #9ca3af;
+    }
+
+    small {
+      color: #555;
+    }
+
+    /* Top bar / brand */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #0ea5e9, #22c55e);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-text-main {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .brand-text-sub {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .topbar-badge {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      color: #e5e7eb;
+      background: rgba(15, 23, 42, 0.7);
+      white-space: nowrap;
+    }
+
+    /* Hero card */
+    .hero-title {
+      font-size: 1.45rem;
+      margin: 0 0 0.35rem;
+      color: var(--pb-text-main);
+    }
+
+    .hero-subtitle {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--pb-text-muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.75rem;
+    }
+
+    .hero-tag {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      background: var(--pb-accent-soft);
+      color: #0369a1;
+    }
+
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+      align-items: flex-start;
+    }
+
+    .list-clean {
+      padding-left: 1.1rem;
+      margin: 0.4rem 0 0;
+      color: var(--pb-text-muted);
+      font-size: 0.92rem;
+    }
+
+    .list-clean li {
+      margin-bottom: 0.25rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 0.8rem;
+      color: #4b5563;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
 
     /* Shared buttons */
     .btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 0.65rem 1rem;
       border-radius: 10px;
-      border: 1px solid #333;
-      background: #111;
-      color: #fff;
+      border: 1px solid #111827;
+      background: #111827;
+      color: #f9fafb;
       font-weight: 600;
       cursor: pointer;
-      text-decoration: none; /* in case applied to anchors anywhere */
+      text-decoration: none;
+      font-size: 0.95rem;
+      gap: 0.4rem;
     }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn:hover {
+      background: #020617;
+    }
+
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    .btn-secondary {
-      background: #fff;
-      color: #111;
-      border: 1px solid #333;
-    }
-    .stack { display: flex; flex-wrap: wrap; gap: .5rem; }
 
-    .muted { color: #666; font-size: .95rem; }
-    .divider { height: 1px; background: #eee; margin: .75rem 0 0 0; }
+    .btn-secondary {
+      background: #ffffff;
+      color: #111827;
+      border: 1px solid #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .muted {
+      color: var(--pb-text-muted);
+      font-size: 0.92rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--pb-border);
+      margin: 0.75rem 0 0.5rem 0;
+    }
+
+    /* Layout tweaks for cards */
+    #card-consent label {
+      font-weight: 500;
+    }
+
+    #card-profile textarea {
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        padding-inline: 1rem;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-bottom {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Paul Bickford Solutions • Advanced Career Mastery</h1>
-  <p class="muted">Hello, I’m your ACM TA. I’ll personalize your first 90 days by using your inputs below. You can opt out of any step.</p>
+  <div class="shell">
+    <!-- Top brand bar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">PB</div>
+        <div>
+          <div class="brand-text-main">Paul Bickford Solutions</div>
+          <div class="brand-text-sub">Advanced Career Mastery • Teaching Assistant</div>
+        </div>
+      </div>
+      <div class="topbar-badge">First 90 Days Companion</div>
+    </header>
 
-  <!-- 1) Consent -->
-  <div class="card" id="card-consent">
-    <h2>Consent</h2>
-    <label><input type="checkbox" id="consentSite" /> I consent to the TA using my personal website to tailor my learning plan.</label>
-    <label><input type="checkbox" id="consentLinkedIn" /> I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).</label>
-    <label><input type="checkbox" id="consentJD" /> I consent to the TA storing my new job description for personalization.</label>
+    <!-- Hero / overview -->
+    <section class="card" id="card-hero">
+      <div class="card-header">
+        <h2>Welcome</h2>
+      </div>
+      <h1 class="hero-title">Design your first 90 days with intention.</h1>
+      <p class="hero-subtitle">
+        This assistant helps you turn your new executive role into momentum—using your
+        LinkedIn, personal site, and job description to personalize the journey.
+      </p>
+
+      <div class="hero-tags">
+        <span class="hero-tag">New Director / VP / Executive</span>
+        <span class="hero-tag">Watkins: The First 90 Days</span>
+        <span class="hero-tag">Guided weekly exercises</span>
+      </div>
+
+      <div class="hero-bottom">
+        <div>
+          <p class="muted" style="margin-top:0.75rem;">
+            In a few minutes you will:
+          </p>
+          <ul class="list-clean">
+            <li>Give the TA permission to use your public professional profile.</li>
+            <li>Share your new job description and Day-90 outcomes.</li>
+            <li>Take the <strong>Transition Risk Assessment</strong> to map your risk profile.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="pill">
+            <span class="pill-dot"></span>
+            <span>Estimated setup time: 5–7 minutes</span>
+          </div>
+          <p class="muted" style="margin-top:0.6rem;">
+            You’re in control. You can opt out of any data, and still complete
+            every exercise manually if you prefer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1) Consent -->
+    <section class="card" id="card-consent">
+      <div class="card-header">
+        <h2>Step 1 · Consent</h2>
+      </div>
+      <p class="muted" style="margin-top:0;">
+        Choose which professional sources the ACM TA can use to personalize your plan.
+        You can change this later.
+      </p>
+
+      <label>
+        <input type="checkbox" id="consentSite" />
+        I consent to the TA using my personal website to tailor my learning plan.
+      </label>
+      <label>
+        <input type="checkbox" id="consentLinkedIn" />
+        I consent to the TA using my LinkedIn data (I will paste sections or provide a URL).
+      </label>
+      <label>
+        <input type="checkbox" id="consentJD" />
+        I consent to the TA storing my new job description for personalization.
+      </label>
+    </section>
+
+    <!-- 2) Links & Profile -->
+    <section class="card" id="card-profile">
+      <div class="card-header">
+        <h2>Step 2 · Your Professional Profile</h2>
+      </div>
+      <p class="muted" style="margin-top:0;">
+        These inputs help the TA speak your language and align exercises to your actual role.
+      </p>
+
+      <label>Personal Website URL(s)</label>
+      <textarea id="siteUrls" rows="2" placeholder="https://example.com · https://me.example.org"></textarea>
+
+      <label>LinkedIn Profile URL or Pasted Sections</label>
+      <textarea id="linkedin" rows="4" placeholder="Paste About / Experience sections or your profile URL"></textarea>
+
+      <label>New Job Description (paste)</label>
+      <textarea id="jobDesc" rows="6" placeholder="Paste the JD from your offer letter or posting."></textarea>
+
+      <label>Optional: Your top 2–3 outcomes for Day 90</label>
+      <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee."></textarea>
+    </section>
+
+    <!-- 3) Primary CTA: Transition Risk Assessment -->
+    <section class="card" id="card-primary-cta">
+      <div class="card-header">
+        <h2>Step 3 · Start with your Transition Risk Assessment</h2>
+      </div>
+      <p class="muted" style="margin-top:0;">
+        This is your starting point: you’ll see where your transition is relatively low,
+        moderate, or high risk—then the TA will use that to tailor guidance.
+      </p>
+      <div class="stack" style="margin-top:0.75rem;">
+        <button class="btn" id="save">
+          <span>Save &amp; Continue to Transition Risk Assessment</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path fill="currentColor" d="M7.293 3.293a1 1 0 0 1 1.414 0l5.5 5.5a1 1 0 0 1 0 1.414l-5.5 5.5a1 1 0 0 1-1.414-1.414L11.086 11H3a1 1 0 1 1 0-2h8.086L7.293 4.707a1 1 0 0 1 0-1.414Z"/>
+          </svg>
+        </button>
+      </div>
+      <p class="muted" style="margin-top:.5rem;">
+        Your profile is stored locally in your browser and used only to personalize this program.
+      </p>
+    </section>
+
+    <!-- Dynamic "Next up" from manifest.json -->
+    <section class="card" id="nextUpCard" style="display:none;">
+      <div class="card-header">
+        <h2>Upcoming Exercises</h2>
+      </div>
+      <div id="nextUpList"></div>
+    </section>
+
+    <!-- 4) Assessments & Tools -->
+    <section class="card" id="card-tools">
+      <div class="card-header">
+        <h2>Assessments &amp; Tools</h2>
+      </div>
+      <p class="muted" style="margin-top:0;">
+        After you complete the Transition Risk Assessment, additional tools appear here,
+        including your Break-Even Point visualization.
+      </p>
+      <div class="divider"></div>
+      <div class="stack" style="margin-top:.75rem;">
+        <!-- Secondary tool button: Break-Even Point visualization -->
+        <button class="btn btn-secondary" id="openBEP" disabled>Open Break-Even Point Visualization</button>
+      </div>
+      <p class="muted" id="toolsHint" style="margin-top:.5rem;">
+        (Complete the Transition Risk Assessment first to unlock additional tools.)
+      </p>
+    </section>
   </div>
 
-  <!-- 2) Links & Profile -->
-  <div class="card" id="card-profile">
-    <h2>Your Links & Profile</h2>
-    <label>Personal Website URL(s)</label>
-    <textarea id="siteUrls" rows="2" placeholder="https://example.com, https://me.example.org"></textarea>
-
-    <label>LinkedIn Profile URL or Pasted Sections</label>
-    <textarea id="linkedin" rows="4" placeholder="Paste About/Experience or your profile URL"></textarea>
-
-    <label>New Job Description (paste)</label>
-    <textarea id="jobDesc" rows="6" placeholder="Paste JD here"></textarea>
-
-    <label>Optional: Your top 2–3 outcomes for Day 90</label>
-    <textarea id="outcomes" rows="3" placeholder="e.g., Hire 2 key roles; stabilize monthly reporting; launch customer steering committee"></textarea>
-  </div>
-
-  <!-- 3) Primary CTA: Transition Risk Assessment -->
-  <div class="card" id="card-primary-cta">
-    <div class="stack">
-      <button class="btn" id="save">Save &amp; Continue to Transition Risk Assessment</button>
-    </div>
-    <p class="muted" style="margin-top:.5rem;">
-      We’ll only use your inputs to personalize weekly exercises, your plan, and check-ins.
-    </p>
-  </div>
-<div class="card" id="nextUpCard" style="display:none;">
-  <h2>Next up</h2>
-  <div id="nextUpList"></div>
-</div>
-
-<script>
-  // Utility: make a consistent button style (primary vs secondary)
-  function makeBtn(label, href, primary=false) {
-    const a = document.createElement('a');
-    a.href = href;
-    a.textContent = label;
-    a.style.display = 'inline-block';
-    a.style.padding = '0.6rem 1rem';
-    a.style.borderRadius = '10px';
-    a.style.border = '1px solid #333';
-    a.style.marginRight = '.5rem';
-    a.style.textDecoration = 'none';
-    if (primary) {
-      a.style.background = '#111';
-      a.style.color = '#fff';
-    } else {
-      a.style.background = '#fff';
-      a.style.color = '#111';
-    }
-    return a;
-  }
-
-  async function loadNextUp() {
-    try {
-      const res = await fetch('exercises/manifest.json', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load manifest');
-      const manifest = await res.json();
-      const items = (manifest.items || [])
-        .filter(it => it.enabled !== false)
-        .sort((a,b) => (a.order ?? 999) - (b.order ?? 999));
-
-      const wrap = document.getElementById('nextUpList');
-      wrap.innerHTML = '';
-
-      items.forEach((it, idx) => {
-        const container = document.createElement('div');
-        container.style.marginBottom = '.75rem';
-
-        const title = document.createElement('div');
-        title.style.fontWeight = '600';
-        title.style.marginBottom = '.25rem';
-        title.textContent = it.title;
-
-        const desc = document.createElement('div');
-        desc.style.color = '#555';
-        desc.style.marginBottom = '.5rem';
-        desc.textContent = it.description || '';
-
-        const isPrimary = idx === 0; // first item highlighted like the main CTA
-        const href = it.type === 'tool' ? it.path : 'tra.html'; 
-        // For JSON-defined exercises you may navigate to a dedicated page (e.g., tra.html).
-        // If you build a generic renderer later, point to that instead.
-
-        const btn = makeBtn(isPrimary ? `Start: ${it.title}` : `Open: ${it.title}`, href, isPrimary);
-
-        container.appendChild(title);
-        container.appendChild(desc);
-        container.appendChild(btn);
-        wrap.appendChild(container);
-      });
-
-      if (items.length) {
-        document.getElementById('nextUpCard').style.display = 'block';
-      }
-    } catch (e) {
-      console.warn('Next up list unavailable:', e);
-    }
-  }
-
-  // Ensure this runs AFTER your existing code that wires up the Save button
-  document.addEventListener('DOMContentLoaded', loadNextUp);
-</script>
-
-  <!-- 4) Assessments & Tools (this section is BELOW the primary CTA) -->
-  <div class="card" id="card-tools">
-    <h2>Assessments &amp; Tools</h2>
-    <p class="muted">After you complete the Transition Risk Assessment, you can explore additional tools. More items will appear here over time.</p>
-    <div class="divider"></div>
-    <div class="stack" style="margin-top:.75rem;">
-      <!-- Secondary tool button: Break-Even Point visualization -->
-      <button class="btn btn-secondary" id="openBEP" disabled>Open Break-Even Point Visualization</button>
-    </div>
-    <p class="muted" id="toolsHint" style="margin-top:.5rem;">(Complete the Transition Risk Assessment first to unlock additional tools.)</p>
-  </div>
-
+  <!-- Dynamic "Next up" loader -->
   <script>
-    // Enable/disable tools depending on whether the intro was saved
+    function makeBtn(label, href, primary=false) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      a.className = primary ? 'btn' : 'btn btn-secondary';
+      return a;
+    }
+
+    async function loadNextUp() {
+      try {
+        const res = await fetch('/exercises/manifest.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Failed to load manifest');
+        const manifest = await res.json();
+        const items = (manifest.items || [])
+          .filter(it => it.enabled !== false)
+          .sort((a,b) => (a.order ?? 999) - (b.order ?? 999));
+
+        const wrap = document.getElementById('nextUpList');
+        wrap.innerHTML = '';
+
+        items.forEach((it, idx) => {
+          const container = document.createElement('div');
+          container.style.marginBottom = '.9rem';
+
+          const title = document.createElement('div');
+          title.style.fontWeight = '600';
+          title.style.marginBottom = '.1rem';
+          title.textContent = it.title;
+
+          const desc = document.createElement('div');
+          desc.style.color = '#6b7280';
+          desc.style.fontSize = '.9rem';
+          desc.style.marginBottom = '.5rem';
+          desc.textContent = it.description || '';
+
+          const isPrimary = idx === 0;
+          const href = it.type === 'tool' ? it.path : 'tra.html';
+          const btn = makeBtn(isPrimary ? `Start: ${it.title}` : `Open: ${it.title}`, href, isPrimary);
+
+          container.appendChild(title);
+          container.appendChild(desc);
+          container.appendChild(btn);
+          wrap.appendChild(container);
+        });
+
+        if (items.length) {
+          document.getElementById('nextUpCard').style.display = 'block';
+        }
+      } catch (e) {
+        console.warn('Next up list unavailable:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadNextUp);
+  </script>
+
+  <!-- Core TA wiring -->
+  <script>
     function setToolsAvailability() {
       const savedInit = localStorage.getItem('acm_init_v1');
       const bepBtn = document.getElementById('openBEP');
@@ -181,23 +510,7 @@
       }
     }
 
-<script>
-  (async function() {
-    try {
-      const res = await fetch('config.json', { cache: 'no-store' });
-      if (res.ok) {
-        const cfg = await res.json();
-        if (cfg.backendBase) {
-          localStorage.setItem('acm_backend_base', cfg.backendBase);
-        }
-      }
-    } catch (e) {
-      console.warn('No config.json found or failed to load:', e);
-    }
-  })();
-</script>
-
-    // Primary CTA: Save profile & go to TRA
+    // Save profile & go to TRA
     document.getElementById('save').addEventListener('click', () => {
       const payload = {
         consents: {
@@ -211,20 +524,15 @@
         day90_outcomes: document.getElementById('outcomes').value
       };
       localStorage.setItem('acm_init_v1', JSON.stringify(payload));
-      // Navigate to Transition Risk Assessment (kept as the first step)
       window.location.href = 'tra.html';
     });
 
-    // Secondary tool button: Break-Even Point
+    // Break-Even Point tool
     document.getElementById('openBEP').addEventListener('click', () => {
       window.location.href = 'breakeven.html';
     });
 
-    // On load, set availability of tools
     setToolsAvailability();
-
-    // (Optional) If you want the BEP tool to auto-unlock when user returns from tra.html,
-    // this will already work because acm_init_v1 is set before navigation.
   </script>
 </body>
 </html>
