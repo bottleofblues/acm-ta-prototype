@@ -1,14 +1,14 @@
 // Transition Risk Assessment — ACM TA
 
-// 1) Where to send coaching requests
-//    In production this points at your Vercel backend.
-//    If you ever rename the backend project, update this URL.
+// --- CONFIG: where to send coaching requests ---
+// You can override this in DevTools with:
+// localStorage.setItem("acm_backend_base", "http://localhost:3000");
 const BACKEND_BASE =
-  window.location.hostname === "localhost"
-    ? "http://localhost:3000"
-    : "https://acm-ta-backend.vercel.app";
+  localStorage.getItem("acm_backend_base") ||
+  "https://acm-ta-backend.vercel.app";
 
-// 2) Exercise items
+// --- DATA ---
+
 const ACTIONS = [
   "Moving to a new industry or profession",
   "Joining a new company",
@@ -26,12 +26,13 @@ const ACTIONS = [
 
 const STORAGE_KEY = "acm_tra_v1";
 
-// ----- Core table helpers -----
+// --- CORE UI HELPERS ---
 
 function renderTable() {
   const tbody = document.querySelector("#traTable tbody");
   tbody.innerHTML = "";
   const saved = load() || {};
+
   ACTIONS.forEach((action, idx) => {
     const row = document.createElement("tr");
 
@@ -70,41 +71,33 @@ function renderTable() {
     tbody.appendChild(row);
   });
 
-  const journalEl = document.getElementById("journal");
-  if (journalEl) {
-    journalEl.value = saved.journal || "";
-  }
+  const journalBox = document.getElementById("journal");
+  if (journalBox) journalBox.value = saved.journal || "";
 }
 
 function collect() {
   const data = [];
   ACTIONS.forEach((action, idx) => {
     const relevance = document.getElementById(`rel_${idx}`).checked;
-    const difficultyRaw = document
-      .getElementById(`diff_${idx}`)
-      .value.trim();
-    const notes = document
-      .getElementById(`note_${idx}`)
-      .value.trim();
-    const difficulty =
-      difficultyRaw === "" ? null : Number(difficultyRaw);
+    const difficultyRaw = document.getElementById(`diff_${idx}`).value.trim();
+    const notes = document.getElementById(`note_${idx}`).value.trim();
+    const difficulty = difficultyRaw === "" ? null : Number(difficultyRaw);
     data.push({ action, relevance, difficulty, notes });
   });
-  const journalEl = document.getElementById("journal");
-  const journal = journalEl ? journalEl.value.trim() : "";
+  const journal = (document.getElementById("journal")?.value || "").trim();
   return { rows: data, journal };
 }
 
 function score(payload) {
   let total = 0;
   payload.rows.forEach((r) => {
-    if (r.relevance && typeof r.difficulty === "number") {
-      total += r.difficulty;
-    }
+    if (r.relevance && typeof r.difficulty === "number") total += r.difficulty;
   });
+
   let bucket = "Low";
   let guidance =
     "Risks appear manageable; prioritize quick wins and stakeholder mapping.";
+
   if (total > 60) {
     bucket = "High";
     guidance =
@@ -114,6 +107,7 @@ function score(payload) {
     guidance =
       "Target 2–3 risk clusters; time-box learning and secure early allies.";
   }
+
   return { total, bucket, guidance };
 }
 
@@ -123,7 +117,7 @@ function save(payload) {
     out[idx] = {
       relevance: r.relevance,
       difficulty: r.difficulty,
-      notes: r.notes,
+      notes: r.notes
     };
   });
   out.journal = payload.journal;
@@ -145,91 +139,91 @@ function clearAll() {
   if (result) result.textContent = "";
 }
 
-// ----- Coach API helper -----
+// --- COACH API CALL ---
 
 async function postCoach(prompt, profile) {
   const res = await fetch(`${BACKEND_BASE}/api/coach`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, profile }),
+    body: JSON.stringify({ prompt, profile })
   });
 
   if (!res.ok) {
     throw new Error(`Coach API ${res.status}`);
   }
+
   return res.json();
 }
 
-// ----- Wire up UI -----
+// --- WIRE UP EVENTS ---
 
 document.addEventListener("DOMContentLoaded", () => {
   renderTable();
 
-  const calcBtn = document.getElementById("calc");
-  const saveBtn = document.getElementById("save");
-  const clearBtn = document.getElementById("clear");
+  // Calculate risk index
+  document.getElementById("calc").addEventListener("click", () => {
+    const payload = collect();
+    const { total, bucket, guidance } = score(payload);
+    document.getElementById("result").innerHTML = `
+      Transition Risk Index: <strong>${total}</strong>
+      &nbsp; <span class="badge ${
+        bucket === "Low" ? "low" : bucket === "Moderate" ? "mod" : "high"
+      }">${bucket}</span>
+      <br>${guidance}
+    `;
+  });
+
+  // Save locally
+  document.getElementById("save").addEventListener("click", () => {
+    save(collect());
+    document.getElementById("result").textContent =
+      "Progress saved locally on this device.";
+  });
+
+  // Clear
+  document.getElementById("clear").addEventListener("click", clearAll);
+
+  // Coaching button
   const feedbackBtn = document.getElementById("getFeedback");
-  const coachReply = document.getElementById("coachReply");
+  const replyBox = document.getElementById("coachReply");
 
-  if (calcBtn) {
-    calcBtn.addEventListener("click", () => {
-      const payload = collect();
-      const { total, bucket, guidance } = score(payload);
-      document.getElementById("result").innerHTML = `
-        Transition Risk Index: <strong>${total}</strong>
-        &nbsp; <span class="badge ${
-          bucket === "Low" ? "low" : bucket === "Moderate" ? "mod" : "high"
-        }">${bucket}</span>
-        <br>${guidance}
-      `;
-    });
-  }
-
-  if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      save(collect());
-      document.getElementById("result").textContent =
-        "Progress saved locally on this device.";
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", clearAll);
-  }
-
-  if (feedbackBtn && coachReply) {
+  if (feedbackBtn && replyBox) {
     feedbackBtn.addEventListener("click", async () => {
-      coachReply.textContent = "Thinking…";
+      // Show working state
+      replyBox.textContent = "Thinking…";
 
       const payload = collect();
       const { total, bucket } = score(payload);
-      const journal = payload.journal || "(no journal entry)";
+      const journalText = payload.journal || "(no journal entry provided)";
 
-      // Pull whatever we saved on the welcome page
+      // Pull profile from welcome page (if present)
       let profile = {};
       try {
-        profile = JSON.parse(
-          localStorage.getItem("acm_init_v1") || "{}"
-        );
+        profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
       } catch {
         profile = {};
       }
 
-      const prompt =
-        [
-          "Provide concise coaching feedback (3–5 bullets) for a new executive in their first 90 days.",
-          `Transition Risk Index: ${total} (${bucket})`,
-          `Journal: ${journal}`,
-          "Focus on the next 7 days. Avoid generic platitudes; be concrete and practical.",
-        ].join("\n");
+      // Watkins/ACM flavored prompt
+      const prompt = `
+You are the ACM TA coaching a newly hired Director/VP/Senior Executive in their first 90 days, using Michael Watkins' "The First 90 Days" as your mental model.
+
+Transition Risk Index: ${total} (${bucket})
+Journal entry: """${journalText}"""
+
+Using the language of transitions, learning agenda, early wins, and stakeholder mapping:
+- Offer 3–5 short, specific coaching moves for the next 7 days.
+- Speak directly to the learner in the second person ("you").
+- Be concise and practical; no fluff; no restating the numbers.
+`.trim();
 
       try {
-        const data = await postCoach(prompt, profile);
-        const reply = data.reply || data.note || "Feedback ready (stub).";
-        coachReply.textContent = reply;
-      } catch (e) {
-        console.error(e);
-        coachReply.textContent =
+        const result = await postCoach(prompt, profile);
+        replyBox.textContent =
+          result.reply || result.note || "(no response from coach)";
+      } catch (err) {
+        console.error(err);
+        replyBox.textContent =
           "ACM TA could not respond. Please try again in a moment.";
       }
     });
