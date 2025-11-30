@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACM TA — Assessment of Problem Preferences</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #eee; padding: 0.5rem; text-align: left; vertical-align: top; }
+    th { background: #fafafa; }
+    input[type="number"] { width: 70px; }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    button { padding: 0.6rem 1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor: pointer; }
+    .muted { color: #666; font-size: .9rem; }
+    .topbar a { text-decoration: none; }
+    .note { width: 100%; min-height: 100px; }
+    .matrix-table th, .matrix-table td { text-align: center; }
+    .matrix-table th:first-child, .matrix-table td:first-child { text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+    <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
+    <div class="actions">
+      <a href="index.html">← Back to TA Home</a>
+    </div>
+  </div>
+
+  <h1>Assessment of Problem Preferences</h1>
+  <p class="muted">
+    Rate your intrinsic interest (1–10) in solving problems in each domain. 
+    1 = very little interest, 10 = a great deal of interest.
+  </p>
+
+  <!-- PART 1: Domain ratings -->
+  <div class="card">
+    <table id="domainsTable">
+      <thead>
+        <tr>
+          <th style="width:70%;">Domain</th>
+          <th style="width:30%;">Interest (1–10)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="actions" style="margin-top:.75rem;">
+      <button id="calcMatrix">Calculate Problem-Preference Matrix</button>
+      <button id="savePrefs">Save Preferences</button>
+      <button id="clearPrefs">Clear</button>
+    </div>
+    <p id="prefsResult" class="muted"></p>
+  </div>
+
+  <!-- PART 2: Technical / Political / Cultural by Function -->
+  <div class="card">
+    <h2>Problem-Preference Matrix</h2>
+    <p class="muted">
+      Each domain is mapped into Human Resources, Finance, Marketing, Operations, or R&amp;D, 
+      and into Technical, Political, or Cultural spheres. Your scores are summed in each cell.
+    </p>
+    <table class="matrix-table" id="matrixTable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Technical</th>
+          <th>Political</th>
+          <th>Cultural</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Human Resources</th>
+          <td id="HR_Technical">0</td>
+          <td id="HR_Political">0</td>
+          <td id="HR_Cultural">0</td>
+          <td id="HR_Total">0</td>
+        </tr>
+        <tr>
+          <th>Finance</th>
+          <td id="Finance_Technical">0</td>
+          <td id="Finance_Political">0</td>
+          <td id="Finance_Cultural">0</td>
+          <td id="Finance_Total">0</td>
+        </tr>
+        <tr>
+          <th>Marketing</th>
+          <td id="Marketing_Technical">0</td>
+          <td id="Marketing_Political">0</td>
+          <td id="Marketing_Cultural">0</td>
+          <td id="Marketing_Total">0</td>
+        </tr>
+        <tr>
+          <th>Operations</th>
+          <td id="Operations_Technical">0</td>
+          <td id="Operations_Political">0</td>
+          <td id="Operations_Cultural">0</td>
+          <td id="Operations_Total">0</td>
+        </tr>
+        <tr>
+          <th>Research &amp; Development</th>
+          <td id="R&D_Technical">0</td>
+          <td id="R&D_Political">0</td>
+          <td id="R&D_Cultural">0</td>
+          <td id="R&D_Total">0</td>
+        </tr>
+        <tr>
+          <th>Total</th>
+          <td id="Total_Technical">0</td>
+          <td id="Total_Political">0</td>
+          <td id="Total_Cultural">0</td>
+          <td id="Grand_Total">0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PART 3: Reflection & Coaching -->
+  <div class="card">
+    <h2>Reflection</h2>
+    <p class="muted">
+      Reflect on what you see in the matrix. Where do you most enjoy solving problems? 
+      Where are you least eager? What vulnerabilities might this create in your new role?
+    </p>
+    <textarea id="journal" class="note" placeholder="Write your reflections here..."></textarea>
+
+    <div style="margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+      <button id="getProblemFeedback">Get Feedback from ACM TA</button>
+    </div>
+    <p id="coachReply" class="muted" style="margin-top:1rem; white-space:pre-wrap;"></p>
+  </div>
+
+  <!-- JS for this page -->
+  <script src="problems.js?v=1" defer></script>
+</body>
+</html>
