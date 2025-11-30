@@ -20,6 +20,15 @@
       "enabled": true,
       "order": 20,
       "type": "tool"
+    }, 
+    {
+      "id": "problem-preferences",
+      "title": "Assessment of Problem Preferences",
+      "description": "Rate your interest in solving problems across functions and spheres; see your Technical/Political/Cultural profile.",
+      "path": "/problems.html",
+      "enabled": true,
+      "order": 30,
+      "type": "tool"
     }
   ]
 }
