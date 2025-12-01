@@ -66,6 +66,16 @@
     </table>
   </div>
 
+    <table id="domainTable">
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Interest (1–10)</th>
+      </tr>
+    </thead>
+    <tbody id="domainTableBody"></tbody>
+  </table>
+
   <!-- Part 2: Matrix -->
   <div class="card">
     <h2>Part 2 — Problem Preference Matrix</h2>
@@ -75,10 +85,10 @@
     </p>
     <div class="actions" style="margin-bottom:.75rem;">
       <button id="calcMatrix">Calculate Matrix</button>
-      <button class="secondary" id="clearAll">Clear</button>
+      <button class="clearPreferences" id="clearAll">Clear</button>
     </div>
-
-    <table>
+    
+    <table id="matrixTable">
       <thead>
         <tr>
           <th></th>
@@ -88,24 +98,20 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody id="matrixTableBody">
-        <!-- Rows injected by JS: HR, Finance, Marketing, Operations, R&D, Total -->
-      </tbody>
+      <tbody id="matrixBody"></tbody>
     </table>
-
-    <p id="matrixSummary" class="muted" style="margin-top:.75rem;"></p>
-  </div>
-
-  <!-- Reflection & (later) Coaching -->
-  <div class="card">
-    <h2>Reflection</h2>
-    <p class="muted">
-      Reflect on the patterns you see in your matrix and ratings:
-      Where do you most enjoy solving problems? Where are you least eager?
-      What vulnerabilities might that create in your new role?
-    </p>
-    <textarea id="reflection" class="note" placeholder="Capture your reflections here..."></textarea>
-  </div>
+    
+    
+      <!-- Reflection & (later) Coaching -->
+      <div class="card">
+        <h2>Reflection</h2>
+        <p class="muted">
+          Reflect on the patterns you see in your matrix and ratings:
+          Where do you most enjoy solving problems? Where are you least eager?
+          What vulnerabilities might that create in your new role?
+        </p>
+        <textarea id="reflection" class="note" placeholder="Capture your reflections here..."></textarea>
+      </div>
 
   <!-- Coaching output hookup (we’ll wire this to the backend as a next step) -->
   <div class="card">
@@ -120,6 +126,6 @@
   </div>
 
   <!-- Version parameter to avoid cached JS -->
-  <script src="problem-preferences.js?v=2" defer></script>
+  <script src="problem-preferences.js?v=1" defer></script>
 </body>
 </html>
