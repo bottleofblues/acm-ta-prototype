@@ -3,529 +3,123 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ACM TA — Problem Preferences</title>
+  <title>ACM TA — Problem Preference Assessment</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      margin: 2rem;
-      line-height: 1.5;
-      background: #f5f5f7;
-    }
-    .shell {
-      max-width: 960px;
-      margin: 0 auto;
-    }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #e5e7eb;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .brand-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    .brand-sub {
-      font-size: .85rem;
-      color: #6b7280;
-    }
-    .topbar a {
-      text-decoration: none;
-      font-size: .9rem;
-      color: #111827;
-    }
-    h1 {
-      font-size: 1.6rem;
-      margin: 0 0 .25rem 0;
-    }
-    h2 {
-      font-size: 1.1rem;
-      margin: 0 0 .5rem 0;
-    }
-    .muted {
-      color: #6b7280;
-      font-size: .9rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .9rem;
-    }
-    th, td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: .4rem .35rem;
-      text-align: left;
-      vertical-align: middle;
-    }
-    th {
-      background: #f9fafb;
-      font-weight: 600;
-    }
-    input[type="number"] {
-      width: 70px;
-      padding: .3rem .4rem;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: .85rem;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .5rem;
-      margin-top: .5rem;
-    }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    h1, h2, h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #eee; padding: 0.5rem; text-align: left; vertical-align: middle; }
+    th { background: #fafafa; }
+    input[type="number"] { width: 70px; }
+    .muted { color: #666; font-size: .9rem; }
+    .topbar a { text-decoration: none; }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
     button {
-      padding: 0.55rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid #111827;
-      background: #111827;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #111;
       color: #fff;
       cursor: pointer;
-      font-size: .9rem;
-      font-weight: 600;
     }
     button.secondary {
       background: #fff;
-      color: #111827;
+      color: #111;
     }
-    textarea {
-      width: 100%;
-      min-height: 110px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      padding: .6rem .7rem;
-      font-size: .9rem;
-    }
-    .pill {
-      display: inline-block;
-      padding: .15rem .45rem;
-      border-radius: 999px;
-      font-size: .75rem;
-      border: 1px solid #d1d5db;
-      color: #4b5563;
-      background: #f9fafb;
-    }
-    .heat-low {
-      background: #ecfdf3;
-      border-color: #bbf7d0;
-      color: #166534;
-    }
-    .heat-med {
-      background: #fffbeb;
-      border-color: #fed7aa;
-      color: #92400e;
-    }
-    .heat-high {
-      background: #fef2f2;
-      border-color: #fecaca;
-      color: #b91c1c;
-    }
-    .matrix-note {
-      font-size: .8rem;
-      color: #6b7280;
-      margin-top: .25rem;
-    }
-    .coach-reply {
-      white-space: pre-wrap;
-      font-size: .9rem;
-      color: #374151;
-      margin-top: .5rem;
-    }
+    .note { width: 100%; min-height: 100px; }
+    .matrix-cell { text-align: center; }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="topbar">
-      <div>
-        <div class="brand-title">Paul Bickford Solutions • Advanced Career Mastery TA</div>
-        <div class="brand-sub">Problem Preferences — Technical · Political · Cultural</div>
-      </div>
+  <div class="topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+    <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
+    <div class="actions">
       <a href="index.html">← Back to TA Home</a>
-    </div>
-
-    <div class="card">
-      <h1>Assessment of Problem Preferences</h1>
-      <p class="muted">
-        Rate your intrinsic interest in solving problems in each domain (1 = very little interest, 10 = a great deal of interest).
-        Then we’ll roll your scores into the Technical / Political / Cultural × Function matrix used in <em>The First 90 Days</em>.
-      </p>
-    </div>
-
-    <!-- Part 1: Interest ratings for 15 domains -->
-    <div class="card">
-      <h2>Part 1 — Interest Ratings by Domain</h2>
-      <table id="domainsTable">
-        <thead>
-          <tr>
-            <th style="width:65%;">Domain</th>
-            <th style="width:15%;">Interest (1–10)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Rows will be injected by JS -->
-        </tbody>
-      </table>
-      <div class="actions">
-        <button id="calcMatrix">Calculate Matrix</button>
-        <button class="secondary" id="clearAll">Clear</button>
-      </div>
-      <p class="muted" id="calcStatus"></p>
-    </div>
-
-    <!-- Part 2: Technical / Political / Cultural × Function matrix -->
-    <div class="card">
-      <h2>Part 2 — Problem Preference Matrix</h2>
-      <table id="matrixTable">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Technical</th>
-            <th>Political</th>
-            <th>Cultural</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- JS fills these rows -->
-        </tbody>
-      </table>
-      <p class="matrix-note">
-        Values are relative “heat” in each cell based on the ratings you entered for the 15 domains,
-        grouped into Human Resources, Finance, Marketing, Operations, and R&amp;D.
-      </p>
-      <p class="muted" id="matrixSummary"></p>
-    </div>
-
-    <!-- Reflection + coaching hook (Watkins/ACM flavored) -->
-    <div class="card">
-      <h2>Part 3 — Reflection</h2>
-      <p class="muted">
-        Reflect on what the pattern tells you about where you naturally gravitate — and where you may be more vulnerable
-        in your new role.
-      </p>
-      <ul class="muted">
-        <li>In which spheres do you most enjoy solving problems?</li>
-        <li>Which spheres are you least eager to address?</li>
-        <li>What are the implications for vulnerabilities in your new position?</li>
-      </ul>
-      <textarea id="journal" placeholder="Write a short reflection here. For example: I naturally lean into technical problems in operations and finance, but I avoid political and cultural issues in HR…"></textarea>
-
-      <div class="actions" style="margin-top:.75rem;">
-        <button id="coachBtn">Get Feedback from ACM TA</button>
-      </div>
-      <p class="muted" id="coachStatus"></p>
-      <div id="coachReply" class="coach-reply"></div>
+      <a href="tra.html">Transition Risk Assessment</a>
     </div>
   </div>
 
-  <script>
-    // --- Data model for the 15 domains + mapping into the matrix ---
+  <h1>Assessment of Problem Preferences</h1>
+  <p class="muted">
+    Based on Michael Watkins’ <em>The First 90 Days</em>. This exercise helps you clarify which kinds of problems
+    you naturally like to solve — and where you may need to stretch or build complementary support.
+  </p>
 
-    const DOMAINS = [
-      { id: "appraisal", label: "Design of appraisal and reward systems", row: "Human Resources", col: "Technical" },
-      { id: "morale", label: "Employee morale", row: "Human Resources", col: "Cultural" },
-      { id: "equity", label: "Equity / fairness", row: "Human Resources", col: "Political" },
+  <!-- Part 1: Interest Ratings -->
+  <div class="card">
+    <h2>Part 1 — Interest Ratings by Domain</h2>
+    <p class="muted">
+      Rate your intrinsic interest in solving problems in each domain on a scale of 1–10,
+      where 1 = very little interest and 10 = a great deal of interest.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 75%;">Domain</th>
+          <th style="width: 25%;">Interest (1–10)</th>
+        </tr>
+      </thead>
+      <tbody id="domainTableBody">
+        <!-- Filled dynamically by problem-preferences.js -->
+      </tbody>
+    </table>
+  </div>
 
-      { id: "risk", label: "Management of financial risk", row: "Finance", col: "Technical" },
-      { id: "budgeting", label: "Budgeting", row: "Finance", col: "Technical" },
-      { id: "cost", label: "Cost-consciousness", row: "Finance", col: "Cultural" },
+  <!-- Part 2: Matrix -->
+  <div class="card">
+    <h2>Part 2 — Problem Preference Matrix</h2>
+    <p class="muted">
+      Your ratings are mapped into a matrix of functions (rows) and problem types (columns).
+      This helps reveal where you naturally lean — technically, politically, or culturally.
+    </p>
+    <div class="actions" style="margin-bottom:.75rem;">
+      <button id="calcMatrix">Calculate Matrix</button>
+      <button class="secondary" id="clearAll">Clear</button>
+    </div>
 
-      { id: "positioning", label: "Product positioning", row: "Marketing", col: "Technical" },
-      { id: "custRel", label: "Relationships with customers", row: "Marketing", col: "Political" },
-      { id: "custFocus", label: "Organizational customer focus", row: "Marketing", col: "Cultural" },
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Technical</th>
+          <th>Political</th>
+          <th>Cultural</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="matrixTableBody">
+        <!-- Rows injected by JS: HR, Finance, Marketing, Operations, R&D, Total -->
+      </tbody>
+    </table>
 
-      { id: "quality", label: "Product or service quality", row: "Operations", col: "Technical" },
-      { id: "suppliers", label: "Relationships with distributors and suppliers", row: "Operations", col: "Political" },
-      { id: "improvement", label: "Continuous improvement", row: "Operations", col: "Cultural" },
-      { id: "projMgmt", label: "Project management systems", row: "Operations", col: "Technical" },
+    <p id="matrixSummary" class="muted" style="margin-top:.75rem;"></p>
+  </div>
 
-      { id: "rdRelations", label: "Relationships among R&D, marketing, and operations", row: "Research and development", col: "Political" },
-      { id: "crossFunc", label: "Cross-functional cooperation", row: "Research and development", col: "Cultural" }
-    ];
+  <!-- Reflection & (later) Coaching -->
+  <div class="card">
+    <h2>Reflection</h2>
+    <p class="muted">
+      Reflect on the patterns you see in your matrix and ratings:
+      Where do you most enjoy solving problems? Where are you least eager?
+      What vulnerabilities might that create in your new role?
+    </p>
+    <textarea id="reflection" class="note" placeholder="Capture your reflections here..."></textarea>
+  </div>
 
-    const ROWS = [
-      "Human Resources",
-      "Finance",
-      "Marketing",
-      "Operations",
-      "Research and development"
-    ];
-    const COLS = ["Technical", "Political", "Cultural"];
+  <!-- Coaching output hookup (we’ll wire this to the backend as a next step) -->
+  <div class="card">
+    <h3>Optional: Ask ACM TA for Insight</h3>
+    <p class="muted">
+      Once you’ve completed the ratings and matrix, you can ask the ACM TA for a short coaching read-out.
+    </p>
+    <div class="actions">
+      <button id="getProblemPrefFeedback">Get Feedback from ACM TA</button>
+    </div>
+    <p id="coachReply" class="muted" style="margin-top:.75rem; white-space:pre-wrap;"></p>
+  </div>
 
-    const DOM_STORAGE_KEY = "acm_problem_prefs_v1";
-
-    // --- Render the domains table with 1–10 inputs ---
-
-    function renderDomainsTable() {
-      const tbody = document.querySelector("#domainsTable tbody");
-      tbody.innerHTML = "";
-
-      let saved = {};
-      try {
-        saved = JSON.parse(localStorage.getItem(DOM_STORAGE_KEY) || "{}");
-      } catch {}
-
-      DOMAINS.forEach(d => {
-        const tr = document.createElement("tr");
-
-        const tdLabel = document.createElement("td");
-        tdLabel.textContent = d.label;
-
-        const tdInput = document.createElement("td");
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = "1";
-        input.max = "10";
-        input.id = `score_${d.id}`;
-        if (typeof saved[d.id] === "number") input.value = saved[d.id];
-        tdInput.appendChild(input);
-
-        tr.appendChild(tdLabel);
-        tr.appendChild(tdInput);
-        tbody.appendChild(tr);
-      });
-    }
-
-    // --- Collect scores into a simple {id: number} map ---
-
-    function collectScores() {
-      const scores = {};
-      DOMAINS.forEach(d => {
-        const el = document.getElementById(`score_${d.id}`);
-        const raw = (el?.value || "").trim();
-        if (raw === "") return;
-        const val = Number(raw);
-        if (!Number.isNaN(val) && val >= 1 && val <= 10) {
-          scores[d.id] = val;
-        }
-      });
-      return scores;
-    }
-
-    function saveScores(scores) {
-      localStorage.setItem(DOM_STORAGE_KEY, JSON.stringify(scores));
-    }
-
-    function clearScores() {
-      localStorage.removeItem(DOM_STORAGE_KEY);
-      document.getElementById("journal").value = "";
-      renderDomainsTable();
-      renderMatrix({});
-      document.getElementById("calcStatus").textContent = "";
-      document.getElementById("matrixSummary").textContent = "";
-      document.getElementById("coachStatus").textContent = "";
-      document.getElementById("coachReply").textContent = "";
-    }
-
-    // --- Compute matrix from scores ---
-
-    function computeMatrix(scores) {
-      // initialize structure
-      const matrix = {};
-      const rowTotals = {};
-      const colTotals = {};
-      let grandTotal = 0;
-
-      ROWS.forEach(r => {
-        matrix[r] = {};
-        rowTotals[r] = 0;
-        COLS.forEach(c => {
-          matrix[r][c] = 0;
-          colTotals[c] = colTotals[c] ?? 0;
-        });
-      });
-
-      // accumulate scores into cells
-      DOMAINS.forEach(d => {
-        const val = scores[d.id];
-        if (typeof val === "number") {
-          matrix[d.row][d.col] += val;
-          rowTotals[d.row] += val;
-          colTotals[d.col] += val;
-          grandTotal += val;
-        }
-      });
-
-      return { matrix, rowTotals, colTotals, grandTotal };
-    }
-
-    // --- Render matrix into the table ---
-
-    function heatClass(val, grandTotal) {
-      if (!grandTotal || val === 0) return "";
-      const pct = val / grandTotal;
-      if (pct >= 0.28) return "heat-high";
-      if (pct >= 0.16) return "heat-med";
-      return "heat-low";
-    }
-
-    function renderMatrix(scores) {
-      const tbody = document.querySelector("#matrixTable tbody");
-      tbody.innerHTML = "";
-
-      const { matrix, rowTotals, colTotals, grandTotal } = computeMatrix(scores);
-
-      ROWS.forEach(r => {
-        const tr = document.createElement("tr");
-
-        const tdRow = document.createElement("td");
-        tdRow.textContent = r;
-        tr.appendChild(tdRow);
-
-        COLS.forEach(c => {
-          const td = document.createElement("td");
-          const val = matrix[r][c] || 0;
-          const span = document.createElement("span");
-          span.textContent = val || "–";
-          const cls = heatClass(val, grandTotal);
-          if (cls) span.className = `pill ${cls}`;
-          else span.className = "pill";
-          td.appendChild(span);
-          tr.appendChild(td);
-        });
-
-        const tdTotal = document.createElement("td");
-        tdTotal.textContent = rowTotals[r] || 0;
-        tr.appendChild(tdTotal);
-
-        tbody.appendChild(tr);
-      });
-
-      // Add a totals row
-      const trTotals = document.createElement("tr");
-      const tdLabel = document.createElement("td");
-      tdLabel.textContent = "Total";
-      trTotals.appendChild(tdLabel);
-
-      COLS.forEach(c => {
-        const td = document.createElement("td");
-        td.textContent = colTotals[c] || 0;
-        trTotals.appendChild(td);
-      });
-
-      const tdGrand = document.createElement("td");
-      tdGrand.textContent = grandTotal || 0;
-      trTotals.appendChild(tdGrand);
-      tbody.appendChild(trTotals);
-
-      // Simple textual summary
-      let summary = "";
-      if (grandTotal > 0) {
-        // Highest row & column
-        const bestRow = ROWS.reduce((a, b) => rowTotals[b] > (rowTotals[a] || 0) ? b : a, ROWS[0]);
-        const bestCol = COLS.reduce((a, b) => colTotals[b] > (colTotals[a] || 0) ? b : a, COLS[0]);
-        summary = `You show strongest problem interest in ${bestCol.toLowerCase()} issues, particularly in ${bestRow}.`;
-      }
-      document.getElementById("matrixSummary").textContent = summary;
-    }
-
-    // --- ACM TA coaching hook (uses same backend as TRA) ---
-
-    async function postCoach(prompt, profile) {
-      const base = localStorage.getItem("acm_backend_base") || "http://localhost:3000"; // dev default
-      const res = await fetch(`${base}/api/coach`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, profile })
-      });
-      if (!res.ok) throw new Error(\`Coach API \${res.status}\`);
-      return res.json();
-    }
-
-    async function handleCoachClick() {
-      const statusEl = document.getElementById("coachStatus");
-      const replyEl = document.getElementById("coachReply");
-      statusEl.textContent = "Thinking…";
-      replyEl.textContent = "";
-
-      const scores = collectScores();
-      const { matrix, rowTotals, colTotals, grandTotal } = computeMatrix(scores);
-      const journal = (document.getElementById("journal").value || "").trim() || "(no reflection entered)";
-
-      // Build a concise description of the matrix for the coach
-      function describeMatrix() {
-        const rowParts = ROWS.map(r => \`\${r}: \${rowTotals[r] || 0}\`);
-        const colParts = COLS.map(c => \`\${c}: \${colTotals[c] || 0}\`);
-        return {
-          rowSummary: rowParts.join("; "),
-          colSummary: colParts.join("; "),
-          total: grandTotal
-        };
-      }
-
-      const desc = describeMatrix();
-
-      // Pull learner profile (welcome page)
-      let profile = {};
-      try {
-        profile = JSON.parse(localStorage.getItem("acm_init_v1") || "{}");
-      } catch {}
-
-      const prompt = [
-        "You are the ACM Teaching Assistant, drawing on Michael Watkins' *The First 90 Days*.",
-        "The learner is a newly hired director/VP/senior executive.",
-        "",
-        "You are reviewing their Assessment of Problem Preferences (Technical / Political / Cultural × HR / Finance / Marketing / Operations / R&D).",
-        "Use the results to highlight where they naturally gravitate and where they may be vulnerable in their new role.",
-        "",
-        "Matrix row totals (problem interest by function):",
-        desc.rowSummary,
-        "",
-        "Matrix column totals (Technical / Political / Cultural):",
-        desc.colSummary,
-        "",
-        `Grand total interest score: ${desc.total}`,
-        "",
-        "Learner reflection:",
-        journal,
-        "",
-        "Their profile (from onboarding) may include a job description, LinkedIn themes, and website signals:",
-        JSON.stringify(profile),
-        "",
-        "In 4–6 concise bullets:",
-        "- Identify 2–3 areas of natural strength (where they will enjoy solving problems).",
-        "- Identify 2–3 likely vulnerability zones where they might avoid work or under-invest.",
-        "- Offer 2 concrete strategies for compensating for those vulnerabilities in the first 90 days (e.g., allies to recruit, routines to install, or learning goals).",
-        "Keep it executive-level, practical, and forward-looking."
-      ].join("\n");
-
-      try {
-        const result = await postCoach(prompt, profile);
-        statusEl.textContent = "";
-        replyEl.textContent = result.reply || result.note || "(No response from ACM TA.)";
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "ACM TA could not respond. Please try again in a moment.";
-      }
-    }
-
-    // --- Wire up DOM events ---
-
-    document.addEventListener("DOMContentLoaded", () => {
-      renderDomainsTable();
-      renderMatrix({});
-
-      document.getElementById("calcMatrix").addEventListener("click", () => {
-        const scores = collectScores();
-        saveScores(scores);
-        renderMatrix(scores);
-        const filled = Object.keys(scores).length;
-        document.getElementById("calcStatus").textContent =
-          filled ? \`Saved \${filled} ratings and updated your matrix.\` :
-                   "No valid ratings entered yet.";
-      });
-
-      document.getElementById("clearAll").addEventListener("click", clearScores);
-      document.getElementById("coachBtn").addEventListener("click", handleCoachClick);
-    });
-  </script>
+  <!-- Version parameter to avoid cached JS -->
+  <script src="problem-preferences.js?v=2" defer></script>
 </body>
 </html>
