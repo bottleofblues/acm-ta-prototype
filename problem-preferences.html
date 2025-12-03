@@ -3,17 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ACM TA — Problem Preference Assessment</title>
+  <title>ACM TA — Problem Preferences</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.45; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
-    h1, h2, h3 { margin-top: 0; }
     table { width: 100%; border-collapse: collapse; }
-    th, td { border-bottom: 1px solid #eee; padding: 0.5rem; text-align: left; vertical-align: middle; }
+    th, td { border-bottom: 1px solid #eee; padding: 0.5rem; text-align: left; vertical-align: top; }
     th { background: #fafafa; }
     input[type="number"] { width: 70px; }
-    .muted { color: #666; font-size: .9rem; }
-    .topbar a { text-decoration: none; }
     .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
     button {
       padding: 0.6rem 1rem;
@@ -22,13 +19,16 @@
       background: #111;
       color: #fff;
       cursor: pointer;
+      font-weight: 600;
     }
-    button.secondary {
+    .btn-secondary {
       background: #fff;
       color: #111;
     }
+    .muted { color: #666; font-size: .9rem; }
     .note { width: 100%; min-height: 100px; }
-    .matrix-cell { text-align: center; }
+    .topbar a { text-decoration: none; }
+    .badge { display: inline-block; padding: .15rem .4rem; border-radius: 999px; border: 1px solid #111; font-size: .75rem; }
   </style>
 </head>
 <body>
@@ -36,59 +36,51 @@
     <div><strong>Paul Bickford Solutions • Advanced Career Mastery</strong></div>
     <div class="actions">
       <a href="index.html">← Back to TA Home</a>
-      <a href="tra.html">Transition Risk Assessment</a>
     </div>
   </div>
 
   <h1>Assessment of Problem Preferences</h1>
   <p class="muted">
-    Based on Michael Watkins’ <em>The First 90 Days</em>. This exercise helps you clarify which kinds of problems
-    you naturally like to solve — and where you may need to stretch or build complementary support.
+    Based on Michael Watkins’ <em>The First 90 Days</em>. First, rate how interested you are in solving problems
+    in each domain. Then we’ll map those interests across technical, political, and cultural spheres and get
+    tailored coaching from ACM TA.
   </p>
 
-  <!-- Part 1: Interest Ratings -->
+  <!-- PART 1: Interest Ratings by Domain -->
   <div class="card">
     <h2>Part 1 — Interest Ratings by Domain</h2>
     <p class="muted">
-      Rate your intrinsic interest in solving problems in each domain on a scale of 1–10,
+      Assess your intrinsic interest in solving problems in each domain on a scale of 1 to 10,
       where 1 = very little interest and 10 = a great deal of interest.
     </p>
+
     <table>
       <thead>
         <tr>
-          <th style="width: 75%;">Domain</th>
-          <th style="width: 25%;">Interest (1–10)</th>
+          <th style="width:70%;">Domain</th>
+          <th style="width:30%;">Interest (1–10)</th>
         </tr>
       </thead>
-      <tbody id="domainTableBody">
-        <!-- Filled dynamically by problem-preferences.js -->
+      <tbody id="ppDomainBody">
+        <!-- Rows injected by problem-preferences.js -->
       </tbody>
     </table>
   </div>
 
-    <table id="domainTable">
-    <thead>
-      <tr>
-        <th>Domain</th>
-        <th>Interest (1–10)</th>
-      </tr>
-    </thead>
-    <tbody id="domainTableBody"></tbody>
-  </table>
-
-  <!-- Part 2: Matrix -->
+  <!-- PART 2: Problem Preference Matrix -->
   <div class="card">
     <h2>Part 2 — Problem Preference Matrix</h2>
     <p class="muted">
-      Your ratings are mapped into a matrix of functions (rows) and problem types (columns).
-      This helps reveal where you naturally lean — technically, politically, or culturally.
+      We’ll group your interests into technical, political, and cultural spheres, across major functional areas.
+      Then you can see where you’re naturally drawn — and where blind spots may emerge.
     </p>
-    <div class="actions" style="margin-bottom:.75rem;">
-      <button id="calcMatrix">Calculate Matrix</button>
-      <button class="clearPreferences" id="clearAll">Clear</button>
+
+    <div class="actions" style="margin-bottom:.5rem;">
+      <button id="ppCalcMatrix">Calculate Matrix</button>
+      <button class="btn-secondary" id="ppClear">Clear</button>
     </div>
-    
-    <table id="matrixTable">
+
+    <table>
       <thead>
         <tr>
           <th></th>
@@ -98,84 +90,34 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody id="matrixBody"></tbody>
+      <tbody id="ppMatrixBody">
+        <!-- Rows injected by problem-preferences.js -->
+      </tbody>
     </table>
-    
-    
-      <!-- Reflection & (later) Coaching -->
-      <div class="card">
-        <h2>Reflection</h2>
-        <p class="muted">
-          Reflect on the patterns you see in your matrix and ratings:
-          Where do you most enjoy solving problems? Where are you least eager?
-          What vulnerabilities might that create in your new role?
-        </p>
-        <textarea id="reflection" class="note" placeholder="Capture your reflections here..."></textarea>
-      </div>
 
-  <!-- Coaching output hookup (we’ll wire this to the backend as a next step) -->
-  <div class="card">
-    <h3>Optional: Ask ACM TA for Insight</h3>
-    <p class="muted">
-      Once you’ve completed the ratings and matrix, you can ask the ACM TA for a short coaching read-out.
-    </p>
-    <div class="actions">
-      <button id="getProblemPrefFeedback">Get Feedback from ACM TA</button>
-    </div>
-    <p id="coachReply" class="muted" style="margin-top:.75rem; white-space:pre-wrap;"></p>
+    <p id="ppMatrixSummary" class="muted" style="margin-top:.5rem;"></p>
   </div>
 
-  <!-- Version parameter to avoid cached JS -->
-
-    <div class="card">
-    <h2>Part 3 — Reflect & Get Coaching</h2>
-    <p class="muted">
-      Based on your interest ratings and the matrix, capture what this says about where you like
-      to solve problems—and where you may be less inclined to lean in.
-    </p>
-
-    <textarea
-      id="ppJournal"
-      class="note"
-      placeholder="What spheres do you enjoy solving problems in? Where are you least eager?
-What are the implications for potential vulnerabilities in your new position?"
-    ></textarea>
-
-    <div style="margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap;">
-      <button id="ppGetFeedback">Get Feedback from ACM TA</button>
-    </div>
-
-    <!-- Where the TA's response will show -->
-    <p id="ppCoachReply" class="muted" style="margin-top:1rem; white-space:pre-wrap;"></p>
-  </div>
-
-  <!-- bump version to avoid old JS in browser cache -->
-  <script src="problem-preferences.js?v=2" defer></script>
-</body>
-</html>
+  <!-- PART 3: Reflect & Get Coaching (SINGLE SECTION) -->
   <div class="card">
     <h2>Part 3 — Reflect & Get Coaching</h2>
     <p class="muted">
-      Based on your interest ratings and the matrix, capture what this says about where you like
-      to solve problems—and where you may be less inclined to lean in.
+      Use this space to interpret what you see. Watkins would ask:
+      <br>• In which spheres do you most enjoy solving problems?
+      <br>• Where are you least eager to engage?
+      <br>• What vulnerabilities could this create in your new role?
     </p>
 
-    <textarea
-      id="ppJournal"
-      class="note"
-      placeholder="What spheres do you enjoy solving problems in? Where are you least eager?
-What are the implications for potential vulnerabilities in your new position?"
-    ></textarea>
+    <textarea id="ppJournal" class="note"
+      placeholder="What patterns do you notice? Where are you drawn? Where might you avoid problems that still matter?"></textarea>
 
-    <div style="margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+    <div class="actions" style="margin-top:.75rem;">
       <button id="ppGetFeedback">Get Feedback from ACM TA</button>
     </div>
 
-    <!-- Where the TA's response will show -->
     <p id="ppCoachReply" class="muted" style="margin-top:1rem; white-space:pre-wrap;"></p>
   </div>
 
-  <!-- bump version to avoid old JS in browser cache -->
   <script src="problem-preferences.js?v=2" defer></script>
 </body>
 </html>
