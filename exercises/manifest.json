@@ -28,7 +28,8 @@
       "path": "/problem-preferences.html",
       "enabled": true,
       "order": 30,
-      "type": "tool"
+      "release_date": "2025-11-02",
+      "prerequisites": []
     }
   ]
 }
